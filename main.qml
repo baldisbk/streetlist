@@ -68,6 +68,15 @@ Window {
 			}
 		}
 
+		TextInput {
+			id: query
+			height: 50
+			anchors {
+				left: parent.left
+				right: parent.right
+			}
+		}
+
 		ProgressBar {
 			id: cityProg
 			caption: "City"
@@ -140,6 +149,13 @@ Window {
 			for (var s=0; s<strlist.length; ++s)
 				console.log('    ', strlist[s])
 		}
+		console.log('======== Query ========')
+		var cust = tx.executeSql(query.text)
+		for (i = 0; i < cust.rows.length; ++i) {
+			console.log('~~~~~~~~')
+			for (var prop in cust.rows.item(i))
+				console.log("    ", prop, "=", cust.rows.item(i)[prop])
+		}
 		console.log('======== End dump ========')
 	}
 
@@ -167,7 +183,7 @@ Window {
 			for (var s=0; s<strlist.length; ++s) {
 				tx.executeSql(
 					'INSERT INTO TmpStrInDis(str, dis)'+
-					'SELECT ? AS did, uid FROM TmpStr WHERE wname=?',
+					'SELECT uid, ? AS did FROM TmpStr WHERE wname=?',
 					[res.insertId, strlist[s]])
 			}
 		}
