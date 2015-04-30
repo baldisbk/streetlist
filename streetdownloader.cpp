@@ -2,12 +2,31 @@
 
 #include <QDebug>
 
-StreetDownloader::StreetDownloader(QObject *parent) : QObject(parent)
+StreetList::StreetList(QObject *parent) : QObject(parent)
 {
-	mStreets.insert("1-я Какая-нить улица", new Street("1-я Какая-нить улица"));
+//	Street *a = new Street("1-я Какая-нить улица");
+//	Street *b = new Street("Проспектный проспект");
+//	Street *c = new Street("Бульвар Васи Пупкина");
+//	Region *r = new Region("ДАО");
+//	District *d = new District("Район");
+//	District *e = new District("Раён");
+//	r->addDistrict(d->name());
+//	r->addDistrict(e->name());
+//	d->addStreet(a->wholeName());
+//	d->addStreet(b->wholeName());
+//	e->addStreet(b->wholeName());
+//	e->addStreet(c->wholeName());
+//	d->setRegion(r->name());
+//	e->setRegion(r->name());
+//	mStreets[a->wholeName()] = a;
+//	mStreets[b->wholeName()] = b;
+//	mStreets[c->wholeName()] = c;
+//	mDistricts[d->name()] = d;
+//	mDistricts[e->name()] = e;
+//	mRegions[r->name()] = r;
 }
 
-StreetDownloader::~StreetDownloader()
+StreetList::~StreetList()
 {
 	foreach(District* d, mDistricts)
 		delete d;
@@ -15,37 +34,107 @@ StreetDownloader::~StreetDownloader()
 		delete s;
 }
 
-QStringList StreetDownloader::regions() const
+QStringList StreetList::regions() const
 {
 	return mRegions.keys();
 }
 
-QStringList StreetDownloader::districts() const
+QStringList StreetList::districts() const
 {
 	return mDistricts.keys();
 }
 
-QStringList StreetDownloader::streets() const
+QStringList StreetList::streets() const
 {
 	return mStreets.keys();
 }
 
-Street *StreetDownloader::street(QString name)
+QVariantMap StreetList::street(QString name) const
+{
+	QVariantMap res;
+	Street* str = mStreets.value(name, NULL);
+	if (str) {
+		for(int i = 0; i < str->metaObject()->propertyCount(); ++i) {
+			const char* cname = str->metaObject()->property(i).name();
+			res[cname] = str->property(cname);
+		}
+		res["houses"] = str->houses().join(",");
+	}
+	return res;
+}
+
+QVariantMap StreetList::district(QString name) const
+{
+	QVariantMap res;
+	District* dis = mDistricts.value(name, NULL);
+	if (dis) {
+		for(int i = 0; i < dis->metaObject()->propertyCount(); ++i) {
+			const char* cname = dis->metaObject()->property(i).name();
+			res[cname] = dis->property(cname);
+		}
+		res["streets"] = dis->streets();
+	}
+	return res;
+}
+
+QVariantMap StreetList::region(QString name) const
+{
+	QVariantMap res;
+	Region* reg = mRegions.value(name, NULL);
+	if (reg) {
+		for(int i = 0; i < reg->metaObject()->propertyCount(); ++i) {
+			const char* cname = reg->metaObject()->property(i).name();
+			res[cname] = reg->property(cname);
+		}
+	}
+	return res;
+}
+
+void StreetList::addStreet(const QVariantMap &props)
+{
+	Street* street = new Street(props);
+	mStreets[street->wholeName()] = street;
+}
+
+void StreetList::addRegion(const QVariantMap &props)
+{
+	Region* region = new Region(props);
+	mRegions[region->name()] = region;
+}
+
+void StreetList::addDistrict(const QVariantMap &props)
+{
+	District* district = new District(props);
+	mDistricts[district->name()] = district;
+	QString reg = props.value("region").toString();
+	if (regionPtr(reg))
+		regionPtr(reg)->addDistrict(district->name());
+}
+
+void StreetList::addStreetToDistrict(const QVariantMap &props)
+{
+	Street* str = streetPtr(props.value("street").toString());
+	District* dis = districtPtr(props.value("district").toString());
+	if (str && dis)
+		dis->addStreet(str->wholeName());
+}
+
+Street *StreetList::streetPtr(QString name) const
 {
 	return mStreets.value(name, NULL);
 }
 
-District *StreetDownloader::district(QString name)
+District *StreetList::districtPtr(QString name) const
 {
 	return mDistricts.value(name, NULL);
 }
 
-Region *StreetDownloader::region(QString name)
+Region *StreetList::regionPtr(QString name) const
 {
 	return mRegions.value(name, NULL);
 }
 
-void StreetDownloader::onReplyArrived(QNetworkReply *reply)
+void StreetList::onReplyArrived(QNetworkReply *reply)
 {
 	QString key = reply->url().toString();
 	if (!mRequests.contains(key))
@@ -89,7 +178,7 @@ void StreetDownloader::onReplyArrived(QNetworkReply *reply)
 					this, SLOT(onReplyError(QNetworkReply::NetworkError)));
 				District* dist = new District(newreq.name);
 				mDistricts.insert(dist->name(), dist);
-				dist->setRegion(mRegions[req.name]);
+				dist->setRegion(req.name);
 				++mDistNum;
 			}
 		}
@@ -116,7 +205,7 @@ void StreetDownloader::onReplyArrived(QNetworkReply *reply)
 //						this, SLOT(onReplyError(QNetworkReply::NetworkError)));
 //					++mStreetNum;
 				}
-				mDistricts[req.name]->addStreet(street);
+				mDistricts[req.name]->addStreet(street->wholeName());
 			}
 		}
 		--mDistNum;
@@ -142,12 +231,12 @@ void StreetDownloader::onReplyArrived(QNetworkReply *reply)
 		emit finished();
 }
 
-void StreetDownloader::onReplyError(QNetworkReply::NetworkError code)
+void StreetList::onReplyError(QNetworkReply::NetworkError code)
 {
 	qDebug() << "error" << code;
 }
 
-void StreetDownloader::loadCity()
+void StreetList::download()
 {
 	connect(&mManager, SIGNAL(finished(QNetworkReply*)),
 		this, SLOT(onReplyArrived(QNetworkReply*)));
@@ -171,32 +260,27 @@ QStringList Street::mStreetTypes;
 
 Street::Street(QObject *parent): QObject(parent)
 {
+	initTypes();
 }
 
-Street::Street(const QString &name, QObject *parent): QObject(parent), mName(name)
+Street::Street(const QString &name, QObject *parent): QObject(parent), mWholeName(name)
 {
-	if (mStreetTypes.isEmpty()) {
-		mStreetTypes
-			<< "улица"
-			<< "проспект"
-			<< "шоссе"
-			<< "проезд"
-			<< "переулок"
-			<< "бульвар"
-			<< "аллея"
-			<< "площадь"
-			<< "посёлок"
-			<< "мост"
-			<< "набережная"
-			<< "тупик"
-			<< "просека"
-			<< "квартал"
-			<< "микрорайон"
-			<< "деревня"
-			<< "парк"
-			<< "линия";
+	initTypes();
+	parseName();
+}
+
+Street::Street(const QVariantMap &props, QObject *parent): QObject(parent)
+{
+	initTypes();
+	if (props.value("name").isNull()) {
+		setWholeName(props.value("wholeName").toString());
+	} else {
+		mName = props.value("name").toString();
+		mType = props.value("type").toString();
+		mNumber = props.value("number").toInt();
+		mHouses = props.value("houses").toString().split(",");
+		joinName();
 	}
-	parse();
 }
 
 QString Street::name() const
@@ -219,14 +303,14 @@ QStringList Street::houses() const
 	return mHouses;
 }
 
-QString Street::housesStr() const
-{
-	return mHouses.join(',');
-}
-
 void Street::addHouse(const QString &house)
 {
 	mHouses.append(house);
+}
+
+QString Street::wholeName() const
+{
+	return mWholeName;
 }
 
 void Street::setName(QString arg)
@@ -235,8 +319,8 @@ void Street::setName(QString arg)
 		return;
 
 	mName = arg;
-	parse();
 	emit nameChanged(arg);
+	joinName();
 }
 
 void Street::setType(QString arg)
@@ -246,6 +330,7 @@ void Street::setType(QString arg)
 
 	mType = arg;
 	emit typeChanged(arg);
+	joinName();
 }
 
 void Street::setNumber(int arg)
@@ -255,24 +340,74 @@ void Street::setNumber(int arg)
 
 	mNumber = arg;
 	emit numberChanged(arg);
+	joinName();
 }
 
-void Street::parse()
+void Street::setWholeName(QString arg)
 {
-	QRegExp captureType(mStreetTypes.join("|"));
+	if (mWholeName == arg)
+		return;
+
+	mWholeName = arg;
+	emit wholeNameChanged(arg);
+	parseName();
+}
+
+void Street::joinName()
+{
+	if (mNumber > 0)
+		setWholeName(QString("%1 %2 %3").arg(mNumber).arg(mName).arg(mType));
+	else
+		setWholeName(QString("%1 %2").arg(mName).arg(mType));
+}
+
+void Street::parseName()
+{
+	QRegExp captureType(QString("\\b(%1)\\b").arg(mStreetTypes.join("|")));
 	captureType.setCaseSensitivity(Qt::CaseInsensitive);
 	QRegExp captureNum("(N\\s)?(\\d+)(а|б|в|г|д|е|-(й|ый|ой|ий|я|ая|яя|е|ое|ье))?");
-	QRegExp houseNum("(вл\\s*)?(\\d*)(А|Б|В|Г|Д|Е|Ж|З|И|К)?(\\s*(к|с|стр)\\s*\\d*)*");
 
-	if (captureType.indexIn(mName) != -1) {
-		mType = captureType.cap(0).toLower();
-		mName.remove(captureType);
+	QString partName = mWholeName;
+	if (captureType.indexIn(partName) != -1) {
+		setType(captureType.cap(0).toLower());
+		partName.remove(captureType);
 	}
-	if (captureNum.indexIn(mName) != -1) {
-		mNumber = captureNum.cap(2).toInt();
-		mName.remove(captureNum);
+	if (captureNum.indexIn(partName) != -1) {
+		setNumber(captureNum.cap(2).toInt());
+		partName.remove(captureNum);
+	} else setNumber(0);
+	setName(partName.simplified());
+	joinName();
+}
+
+void Street::processHouses()
+{
+	QRegExp houseNum("(вл\\s*)?(\\d*)(А|Б|В|Г|Д|Е|Ж|З|И|К)?(\\s*(к|с|стр)\\s*\\d*)*");
+}
+
+void Street::initTypes()
+{
+	if (mStreetTypes.isEmpty()) {
+		mStreetTypes
+			<< "улица"
+			<< "проспект"
+			<< "шоссе"
+			<< "проезд"
+			<< "переулок"
+			<< "бульвар"
+			<< "аллея"
+			<< "площадь"
+			<< "посёлок"
+			<< "мост"
+			<< "набережная"
+			<< "тупик"
+			<< "просека"
+			<< "квартал"
+			<< "микрорайон"
+			<< "деревня"
+			<< "парк"
+			<< "линия";
 	}
-	mName = mName.simplified();
 }
 
 
@@ -284,24 +419,31 @@ District::District(const QString &name, QObject *parent): QObject(parent), mName
 {
 }
 
+District::District(const QVariantMap &props, QObject *parent): QObject(parent)
+{
+	mName = props.value("name").toString();
+	mRegion = props.value("region").toString();
+}
+
 QString District::name() const
 {
 	return mName;
 }
 
-Region *District::region() const
+QString District::region() const
 {
 	return mRegion;
 }
 
-void District::addStreet(Street *street)
+void District::addStreet(QString street)
 {
-	mStreets[street->name()] = street;
+	if (!mStreets.contains(street))
+		mStreets.append(street);
 }
 
 QStringList District::streets() const
 {
-	return mStreets.keys();
+	return mStreets;
 }
 
 void District::setName(QString arg)
@@ -313,14 +455,12 @@ void District::setName(QString arg)
 	emit nameChanged(arg);
 }
 
-void District::setRegion(Region *arg)
+void District::setRegion(QString arg)
 {
 	if (mRegion == arg)
 		return;
 
 	mRegion = arg;
-	if (!mRegion->districts().contains(name()))
-		mRegion->addDistrict(this);
 
 	emit regionChanged(arg);
 }
@@ -334,21 +474,25 @@ Region::Region(const QString &name, QObject *parent): QObject(parent), mName(nam
 {
 }
 
+Region::Region(const QVariantMap &props, QObject *parent): QObject(parent)
+{
+	mName = props.value("name").toString();
+}
+
 QString Region::name() const
 {
 	return mName;
 }
 
-void Region::addDistrict(District *district)
+void Region::addDistrict(QString district)
 {
-	mDistricts[district->name()] = district;
-	if (district->region() != this)
-		district->setRegion(this);
+	if (!mDistricts.contains(district))
+		mDistricts.append(district);
 }
 
 QStringList Region::districts() const
 {
-	return mDistricts.keys();
+	return mDistricts;
 }
 
 void Region::setName(QString arg)

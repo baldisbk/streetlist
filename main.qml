@@ -11,7 +11,7 @@ Window {
 	height: 200
 	width: 300
 
-	StreetDownloader {
+	StreetList {
 		id: dwnld
 		onProgress: {
 			var prg
@@ -40,24 +40,31 @@ Window {
 
 			Button {
 				itemSize: 50
-				width: mainwin.width / 3
+				width: mainwin.width / 4
 				anchors.top: parent.top
 				text: "Download"
-				onClicked: dwnld.loadCity()
+				onClicked: dwnld.download()
 			}
 			Button {
 				itemSize: 50
-				width: mainwin.width / 3
+				width: mainwin.width / 4
 				anchors.top: parent.top
 				text: "Save"
 				onClicked: mainwin.db.transaction(mainwin.store)
 			}
 			Button {
 				itemSize: 50
-				width: mainwin.width / 3
+				width: mainwin.width / 4
 				anchors.top: parent.top
 				text: "Load"
 				onClicked: mainwin.db.transaction(mainwin.load)
+			}
+			Button {
+				itemSize: 50
+				width: mainwin.width / 4
+				anchors.top: parent.top
+				text: "Dump"
+				onClicked: mainwin.db.readTransaction(mainwin.dumpDb)
 			}
 		}
 
@@ -102,30 +109,104 @@ Window {
 
 	property var db
 
-	Street {}
-	District{}
-	Region{}
+	function dumpDb(tx) {
+		var i
+		var str = tx.executeSql('SELECT * FROM TmpStr')
+		var dis = tx.executeSql('SELECT * FROM TmpDis')
+		var link = tx.executeSql('SELECT * FROM TmpStrInDis')
+		console.log('======== Database ========')
+		console.log('-------- Streets --------')
+		for (i = 0; i < str.rows.length; ++i)
+			console.log(str.rows.item(i).uid, str.rows.item(i).name, str.rows.item(i).houses, str.rows.item(i).type, str.rows.item(i).number)
+		console.log('-------- Districts --------')
+		for (i = 0; i < dis.rows.length; ++i)
+			console.log(dis.rows.item(i).uid, dis.rows.item(i).name, dis.rows.item(i).region)
+		console.log('-------- Links --------')
+		for (i = 0; i < link.rows.length; ++i)
+			console.log(link.rows.item(i).str, link.rows.item(i).dis)
+		console.log('======== App ========')
+		console.log('-------- Streets --------')
+		var streets = dwnld.streets()
+		var districts = dwnld.districts()
+		for (i=0; i<streets.length; i++) {
+			var street = dwnld.street(streets[i])
+			console.log(street.name, street.houses, street.type, street.number)
+		}
+		console.log('-------- Districts --------')
+		for (i=0; i<districts.length; i++) {
+			var district = dwnld.district(districts[i])
+			console.log(district.name, district.region)
+			var strlist = district.streets
+			for (var s=0; s<strlist.length; ++s)
+				console.log('    ', strlist[s])
+		}
+		console.log('======== End dump ========')
+	}
 
 	function store(tx) {
 		var streets = dwnld.streets()
-		for (var i=0; i<streets.length; i++) {
+		var districts = dwnld.districts()
+		var i
+		tx.executeSql('DELETE FROM TmpStr')
+		tx.executeSql('DELETE FROM TmpDis')
+		tx.executeSql('DELETE FROM TmpStrInDis')
+		for (i=0; i<streets.length; i++) {
 			var street = dwnld.street(streets[i])
-//			tx.executeSql(
-//				'INSERT INTO TmpStr(name, houses, type, num) '+
-//				'VALUES (?, ?, ?, ?)',
-//				[street.name, street.houses, street.type, street.num])
-			console.log(street.name, street.houses, street.type, street.num)
+			tx.executeSql(
+				'INSERT INTO TmpStr(wname, name, houses, type, number) '+
+				'VALUES (?, ?, ?, ?, ?)',
+				[street.wholeName, street.name, street.houses, street.type, street.number])
+		}
+		for (i=0; i<districts.length; i++) {
+			var district = dwnld.district(districts[i])
+			var res = tx.executeSql(
+				'INSERT INTO TmpDis(name, region) '+
+				'VALUES (?, ?)',
+				[district.name, district.region])
+			var strlist = district.streets
+			for (var s=0; s<strlist.length; ++s) {
+				tx.executeSql(
+					'INSERT INTO TmpStrInDis(str, dis)'+
+					'SELECT ? AS did, uid FROM TmpStr WHERE wname=?',
+					[res.insertId, strlist[s]])
+			}
 		}
 	}
 
 	function load(tx) {
+		var res, i;
+
+		res = tx.executeSql('SELECT * FROM TmpStr')
+		for (i = 0; i < res.rows.length; ++i)
+			dwnld.addStreet(res.rows.item(i));
+
+		res = tx.executeSql('SELECT DISTINCT region AS name FROM TmpDis')
+		for (i = 0; i < res.rows.length; ++i)
+			dwnld.addRegion(res.rows.item(i));
+
+		res = tx.executeSql('SELECT * FROM TmpDis')
+		for (i = 0; i < res.rows.length; ++i)
+			dwnld.addDistrict(res.rows.item(i));
+
+		res = tx.executeSql(
+			'SELECT TmpStr.wname AS street, TmpDis.name AS district'+
+			' FROM TmpStrInDis'+
+			' JOIN TmpDis ON TmpDis.uid=dis'+
+			' JOIN TmpStr ON TmpStr.uid=str')
+		for (i = 0; i < res.rows.length; ++i) {
+			console.log(res.rows.item(i).street, res.rows.item(i).district)
+			dwnld.addStreetToDistrict(res.rows.item(i));
+		}
 	}
 
 	function makedb(tx) {
-		tx.executeSql(
-			'CREATE TABLE IF NOT EXISTS TmpReg('+
-			'uid INTEGER PRIMARY KEY AUTOINCREMENT,'+
-			'name TEXT)')
+//		tx.executeSql(
+//			'CREATE TABLE IF NOT EXISTS TmpReg('+
+//			'uid INTEGER PRIMARY KEY AUTOINCREMENT,'+
+//			'name TEXT)')
+//		tx.executeSql('DROP TABLE IF EXISTS TmpStr')
+//		tx.executeSql('DROP TABLE IF EXISTS TmpDis')
+//		tx.executeSql('DROP TABLE IF EXISTS TmpStrInDis')
 		tx.executeSql(
 			'CREATE TABLE IF NOT EXISTS TmpDis('+
 			'uid INTEGER PRIMARY KEY AUTOINCREMENT,'+
@@ -134,8 +215,8 @@ Window {
 		tx.executeSql(
 			'CREATE TABLE IF NOT EXISTS TmpStr('+
 			'uid INTEGER PRIMARY KEY AUTOINCREMENT,'+
-			'name TEXT,houses TEXT,type TEXT,'+
-			'num INTEGER)')
+			'wname TEXT,name TEXT,houses TEXT,type TEXT,'+
+			'number INTEGER)')
 		tx.executeSql(
 			'CREATE TABLE IF NOT EXISTS TmpStrInDis('+
 			'str INTEGER,dis INTEGER)')
