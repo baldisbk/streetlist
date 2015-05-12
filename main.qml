@@ -22,12 +22,28 @@ Window {
 				prg /= max
 			}
 			switch (type) {
-			case StreetDownloader.RTCity: cityProg.percent = prg; break
-			case StreetDownloader.RTRegion: regionProg.percent = prg; break
-			case StreetDownloader.RTDistrict: districtProg.percent = prg; break
-			case StreetDownloader.RTStreet: streetProg.percent = prg; break
+			case StreetList.RTCity:
+				cityProg.percent = prg
+				cityProg.comment = val + "/" + max
+				break
+			case StreetList.RTRegion:
+				regionProg.percent = prg
+				regionProg.comment = val + "/" + max
+				break
+			case StreetList.RTDistrict:
+				districtProg.percent = prg
+				districtProg.comment = val + "/" + max
+				break
+			case StreetList.RTStreet:
+				streetProg.percent = prg
+				streetProg.comment = val + "/" + max
+				break
 			}
 		}
+	}
+
+	StreetModel {
+		id: streetmodel
 	}
 
 	Column {
@@ -40,28 +56,48 @@ Window {
 
 			Button {
 				itemSize: 50
-				width: mainwin.width / 4
+				width: mainwin.width / 3
 				anchors.top: parent.top
-				text: "Download"
+				text: "Load web"
 				onClicked: dwnld.download()
 			}
 			Button {
 				itemSize: 50
-				width: mainwin.width / 4
+				width: mainwin.width / 3
+				anchors.top: parent.top
+				text: "Load DB"
+				onClicked: mainwin.db.transaction(mainwin.load)
+			}
+			Button {
+				itemSize: 50
+				width: mainwin.width / 3
+				anchors.top: parent.top
+				text: "Load files"
+				onClicked: dwnld.loadFiles()
+			}
+		}
+		Row {
+			anchors.left: parent.left
+			anchors.right: parent.right
+			height: 50
+
+			Button {
+				itemSize: 50
+				width: mainwin.width / 3
 				anchors.top: parent.top
 				text: "Save"
 				onClicked: mainwin.db.transaction(mainwin.store)
 			}
 			Button {
 				itemSize: 50
-				width: mainwin.width / 4
+				width: mainwin.width / 3
 				anchors.top: parent.top
-				text: "Load"
-				onClicked: mainwin.db.transaction(mainwin.load)
+				text: "Check"
+				onClicked: dwnld.check()
 			}
 			Button {
 				itemSize: 50
-				width: mainwin.width / 4
+				width: mainwin.width / 3
 				anchors.top: parent.top
 				text: "Dump"
 				onClicked: mainwin.db.readTransaction(mainwin.dumpDb)
@@ -70,6 +106,7 @@ Window {
 
 		TextInput {
 			id: query
+			text: "select * from TmpStr"
 			height: 50
 			anchors {
 				left: parent.left
@@ -134,28 +171,33 @@ Window {
 		for (i = 0; i < link.rows.length; ++i)
 			console.log(link.rows.item(i).str, link.rows.item(i).dis)
 		console.log('======== App ========')
+
 		console.log('-------- Streets --------')
 		var streets = dwnld.streets()
-		var districts = dwnld.districts()
 		for (i=0; i<streets.length; i++) {
 			var street = dwnld.street(streets[i])
-			console.log(street.name, street.houses, street.type, street.number)
+			console.log(street.name, street.type, street.number)
 		}
 		console.log('-------- Districts --------')
+		var districts = dwnld.districts()
+		var strt
 		for (i=0; i<districts.length; i++) {
 			var district = dwnld.district(districts[i])
-			console.log(district.name, district.region)
+			console.log(district.name, district.region.name)
 			var strlist = district.streets
-			for (var s=0; s<strlist.length; ++s)
-				console.log('    ', strlist[s])
+			for (var s=0; s<strlist.length; ++s) {
+				strt = dwnld.street(strlist[s])
+				console.log("   ", strt.name, strt.number, strt.type)
+			}
 		}
-		console.log('======== Query ========')
-		var cust = tx.executeSql(query.text)
-		for (i = 0; i < cust.rows.length; ++i) {
-			console.log('~~~~~~~~')
-			for (var prop in cust.rows.item(i))
-				console.log("    ", prop, "=", cust.rows.item(i)[prop])
-		}
+//		console.log('======== Query ========')
+//		var cust = tx.executeSql(query.text)
+//		streetmodel.filt(cust.rows)
+//		for (i = 0; i < cust.rows.length; ++i) {
+//			console.log('~~~~~~~~')
+//			for (var prop in cust.rows.item(i))
+//				console.log("    ", prop, "=", cust.rows.item(i)[prop])
+//		}
 		console.log('======== End dump ========')
 	}
 
@@ -178,7 +220,7 @@ Window {
 			var res = tx.executeSql(
 				'INSERT INTO TmpDis(name, region) '+
 				'VALUES (?, ?)',
-				[district.name, district.region])
+				[district.name, district.region.name])
 			var strlist = district.streets
 			for (var s=0; s<strlist.length; ++s) {
 				tx.executeSql(
@@ -191,6 +233,8 @@ Window {
 
 	function load(tx) {
 		var res, i;
+
+		dwnld.clear();
 
 		res = tx.executeSql('SELECT * FROM TmpStr')
 		for (i = 0; i < res.rows.length; ++i)
@@ -209,10 +253,8 @@ Window {
 			' FROM TmpStrInDis'+
 			' JOIN TmpDis ON TmpDis.uid=dis'+
 			' JOIN TmpStr ON TmpStr.uid=str')
-		for (i = 0; i < res.rows.length; ++i) {
-			console.log(res.rows.item(i).street, res.rows.item(i).district)
+		for (i = 0; i < res.rows.length; ++i)
 			dwnld.addStreetToDistrict(res.rows.item(i));
-		}
 	}
 
 	function makedb(tx) {
@@ -232,7 +274,7 @@ Window {
 			'CREATE TABLE IF NOT EXISTS TmpStr('+
 			'uid INTEGER PRIMARY KEY AUTOINCREMENT,'+
 			'wname TEXT,name TEXT,houses TEXT,type TEXT,'+
-			'number INTEGER)')
+			'number TEXT)')
 		tx.executeSql(
 			'CREATE TABLE IF NOT EXISTS TmpStrInDis('+
 			'str INTEGER,dis INTEGER)')

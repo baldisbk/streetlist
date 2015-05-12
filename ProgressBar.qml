@@ -4,6 +4,7 @@ Rectangle {
 	id: host
 	property int percent: 0
 	property string caption
+	property string comment
 	property color fillColor: "blue"
 	color: "white"
 	Rectangle {
@@ -19,6 +20,8 @@ Rectangle {
 		anchors.fill: parent
 		horizontalAlignment: Text.AlignHCenter
 		verticalAlignment:  Text.AlignVCenter
-		text: caption + ": " + percent + "%"
+		text: (comment.length == 0) ?
+			      (caption + ": " + percent + "%"):
+			      (caption + "(" + comment + "): " + percent + "%")
 	}
 }
