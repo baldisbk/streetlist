@@ -4,7 +4,10 @@ QT += qml quick location network
 
 SOURCES += main.cpp \
     streetdownloader.cpp \
-    streetmodel.cpp
+    streetmodel.cpp \
+    street.cpp \
+    region.cpp \
+    district.cpp
 
 RESOURCES += qml.qrc
 
@@ -16,4 +19,7 @@ include(deployment.pri)
 
 HEADERS += \
     streetdownloader.h \
-    streetmodel.h
+    streetmodel.h \
+    street.h \
+    region.h \
+    district.h

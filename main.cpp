@@ -4,6 +4,9 @@
 
 #include "streetdownloader.h"
 #include "streetmodel.h"
+#include "street.h"
+#include "district.h"
+#include "region.h"
 
 int main(int argc, char *argv[])
 {

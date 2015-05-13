@@ -4,6 +4,9 @@
 #include <QAbstractItemModel>
 
 #include "streetdownloader.h"
+#include "street.h"
+#include "district.h"
+#include "region.h"
 
 class StreetModel : public QAbstractItemModel
 {
