@@ -169,7 +169,7 @@ void StreetList::onReplyError(QNetworkReply::NetworkError code)
 
 QList<StreetList::Request *> StreetList::parseRequest(QIODevice *input, StreetList::Request *parent)
 {
-	qDebug() << "parsing" << parent->name << parent->url;
+	//qDebug() << "parsing" << parent->name << parent->url;
 	mRequests.remove(parent->url);
 	QList<Request*> newreqs;
 	switch (parent->type) {

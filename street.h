@@ -20,15 +20,49 @@ enum NameFields {
 	nfNumberOfFields
 };
 
+struct ElemNumber {
+	unsigned short num;
+	unsigned short liter;
+	ElemNumber(): num(0), liter(0) {}
+	QString toString() const;
+	bool isNull() const;
+};
+
+struct Number {
+	ElemNumber first;
+	ElemNumber second;
+	QString toString() const;
+	bool isNull() const;
+};
+
+struct ElemHouse {
+	Number main;
+	Number own;
+	Number cor;
+	Number bld;
+	QString toString() const;
+	bool isNull() const;
+};
+
+struct House {
+	QList<ElemHouse> numbers;
+	QString origin;
+	QString toString() const;
+};
+
 class StreetParser {
 public:
 	static QString normalize(QString name);
 	static QStringList split(QString name);
 	static QString join(QStringList names);
-	static QStringList splitHouses(QString houses);
+	static QList<House> splitHouses(QString houses);
 
 private:
 	static void init();
+
+	static ElemNumber parseElemNumber(int& pos, const QString& name);
+	static Number parseNumber(int& pos, const QString& name);
+	static ElemHouse parseElemHouse(int& pos, const QString& name);
 
 	static QList<QRegExp> mStreetTypes;
 	static QStringList mStreetSecondaries;
@@ -100,7 +134,7 @@ private:
 	QStringList nameList() const;
 
 private:
-	QStringList mHouses;
+	QList<House> mHouses;
 	QString mName;
 	QString mType;
 	QString mNumber;

@@ -75,6 +75,96 @@ void StreetParser::init()
 	}
 }
 
+ElemNumber StreetParser::parseElemNumber(int &pos, const QString &name)
+{
+	QRegExp re(QString("(\\d+)|(%1)").arg(mUAlpha.join("|")));
+	ElemNumber res;
+	while(re.indexIn(name, pos) == pos) {
+		QString cap = re.cap(0);
+		if (mUAlpha.contains(cap)) {
+			if (res.liter != 0)
+				break;
+			res.liter = cap.at(0).unicode();
+		} else {
+			if (res.num != 0)
+				break;
+			res.num = cap.toInt();
+		}
+		pos += cap.size();
+	}
+	return res;
+}
+
+Number StreetParser::parseNumber(int &pos, const QString &name)
+{
+	Number num;
+	num.first = parseElemNumber(pos, name);
+	if (num.first.isNull())
+		return num;
+	if (pos >= name.size())
+		return num;
+	if (name.at(pos) == QChar('-'))
+		++pos;
+	ElemNumber en = parseElemNumber(pos, name);
+	if (!en.isNull())
+		num.second = en;
+	return num;
+}
+
+enum AutomataStates {
+	Start,		// Own(own), HasNumber(num)
+	Own,
+	Corpse,
+	Build
+};
+
+ElemHouse StreetParser::parseElemHouse(int &pos, const QString &name)
+{
+	QString own("вл");
+	QString bld("с");
+	QString cor("к");
+	QRegExp re(QString("%1|%2|%3").arg(own).arg(cor).arg(bld));
+	ElemHouse eh;
+	AutomataStates state = Start;
+	while(true) {
+		if (re.indexIn(name, pos) == pos) {
+			QString cap = re.cap(0);
+			pos += cap.size();
+			if (cap == own) state = Own;
+			else if (cap == bld) state = Build;
+			else if (cap == cor) state = Corpse;
+		}
+		Number num = parseNumber(pos, name);
+		if (num.isNull()) {
+			if (state != Start)
+				qDebug() << "Error N" << state << name << pos;
+			return eh;
+		}
+		switch (state) {
+		case Start:
+			if (!eh.main.isNull())
+				qDebug() << "Error DM" << name;
+			eh.main = num; break;
+		case Own:
+			if (!eh.own.isNull())
+				qDebug() << "Error DO" << name;
+			eh.own = num; break;
+		case Build:
+			if (!eh.bld.isNull())
+				qDebug() << "Error DB" << name;
+			eh.bld = num; break;
+		case Corpse:
+			if (!eh.cor.isNull())
+				qDebug() << "Error DC" << name;
+			eh.cor = num; break;
+		}
+		state = Start;
+		if (pos >= name.size())
+			return eh;
+	}
+	return eh;
+}
+
 QString StreetParser::normalize(QString name)
 {
 	init();
@@ -111,6 +201,18 @@ QStringList StreetParser::split(QString name)
 			break;
 		}
 
+	n = n.simplified();
+
+	QRegExp captureSec(QString("\\b(%1)(%2)\\b").
+		arg(mStreetSecondaries.join("|")).arg(mPostfixes.join("|")));
+	if (captureSec.indexIn(n) != -1) {
+		QString cap = captureSec.cap(0);
+		if (cap != n) {
+			n.remove(cap);
+			res[nfSecondary] = cap;
+		}
+	}
+
 	res[nfName] = n.simplified();
 
 	return res;
@@ -125,59 +227,35 @@ QString StreetParser::join(QStringList names)
 	return names.join(' ').simplified();
 }
 
-QStringList StreetParser::splitHouses(QString houses)
+QList<House> StreetParser::splitHouses(QString houses)
 {
 	QStringList toParse = houses.simplified().remove("&nbsp;").split(',');
-	QStringList res;
-	QRegExp own("вл");
-	QRegExp cor("к(\\d+)");
-	QRegExp bld("(с|стр)\\d+)");
-	QRegExp num(QString("(\\d+)(%1)?(/(\\d+)(%1)?)?").arg(mUAlpha.join('|')));
+	QList<House> res;
 
-	QString numberRe = QString("(\\d+)(%1)?").arg(mUAlpha.join('|'));
-	QRegExp total(QString("(вл)?(%1)(/%1)?((к|с|стр)%1)*").arg(numberRe));
+//	QString numberRe = QString("(\\d*)(-\\d*)?(%1)?").arg(mUAlpha.join('|'));
+//	QRegExp total(QString("((|/|вл|к|с)%1)*").arg(numberRe));
+
 	foreach(QString p, toParse) {
-		QString house = p;
-
-
-		if (total.indexIn(house)) {
-			house.remove(total);
-			if (!house.isEmpty())
-				qDebug() << "something left" << house << p;
-		} else
-			qDebug() << "dont match" << house;
-		continue;
-
-
-		bool isOwn = own.indexIn(house);
-		house.remove(own);
-
-		int corNo = -1;
-		if (cor.indexIn(house)) {
-			corNo = cor.cap(1).toInt();
-			house.remove(cor);
-		}
-		int bldNo = -1;
-		if (bld.indexIn(house)) {
-			bldNo = bld.cap(2).toInt();
-			house.remove(bld);
-		}
-		int mainNum = -1;
-		int secNum = -1;
-		QString lit1, lit2;
-		if (num.indexIn(house)) {
-			mainNum = num.cap(1).toInt();
-			lit1 = num.cap(2);
-			QString sec = num.cap(3);
-			if (!sec.isEmpty()) {
-				secNum = num.cap(4).toInt();
-				lit2 = num.cap(5);
-			}
-		} else
-			qDebug() << "very strange num" << p << house;
-		house.remove(num);
-		if (!house.isEmpty())
-			qDebug() << "strange num" << p << house;
+		House house;
+		house.origin = p;
+//		int pos = 0;
+//		while(true) {
+//			ElemHouse eh = parseElemHouse(pos, p);
+//			if (eh.isNull())
+//				qDebug() << "Error HN" << p;
+//			else
+//				house.numbers.append(eh);
+//			if (pos < p.size()) {
+//				if (p.at(pos) == QChar('/'))
+//					++pos;
+//				else {
+//					qDebug() << "Error U" << p << pos << house.toString();
+//					break;
+//				}
+//			} else
+//				break;
+//		}
+		res.append(house);
 	}
 
 	return res;
@@ -202,7 +280,7 @@ Street::Street(const QVariantMap &props, QObject *parent): QObject(parent)
 		mName = props.value("name").toString();
 		mType = props.value("type").toString();
 		mNumber = props.value("number").toInt();
-		mHouses = props.value("houses").toString().split(",");
+		mHouses = StreetParser::splitHouses(props.value("houses").toString());
 		joinName();
 	}
 }
@@ -231,18 +309,24 @@ QString Street::number() const
 
 QString Street::houses() const
 {
-	return mHouses.join(',');
+	QStringList houses;
+	foreach(House h, mHouses)
+		houses.append(h.toString());
+	return houses.join(',');
 }
 
 void Street::addHouse(const QString &house)
 {
-	StreetParser::splitHouses(house);
-	mHouses.append(house);
+	QList<House> list = StreetParser::splitHouses(house);
+	mHouses.append(list);
 }
 
 QStringList Street::houseList() const
 {
-	return mHouses;
+	QStringList houses;
+	foreach(House h, mHouses)
+		houses.append(h.toString());
+	return houses;
 }
 
 QStringList Street::districts() const
@@ -401,8 +485,56 @@ QStringList Street::nameList() const
 		res.append(QString());
 	res[nfName] = name();
 	res[nfType] = type();
-	res[nfSecondary] = QString();
+	res[nfSecondary] = secondary();
 	res[nfNumber] = number();
 
 	return res;
+}
+
+
+QString House::toString() const
+{
+	QStringList res;
+	foreach(const ElemHouse& eh, numbers)
+		res.append(eh.toString());
+	return res.join('/');
+}
+
+QString ElemHouse::toString() const
+{
+	QString res = main.toString();
+	if (!own.isNull())
+		res += "вл" + own.toString();
+	if (!cor.isNull())
+		res += "к" + cor.toString();
+	if (!bld.isNull())
+		res += "с" + bld.toString();
+	return res;
+}
+
+bool ElemHouse::isNull() const
+{
+	return main.isNull() && own.isNull() && bld.isNull() && cor.isNull();
+}
+
+QString ElemNumber::toString() const
+{
+	if (isNull())
+		return QString();
+	return (num==0?"":QString::number(num)) + (liter==0?"":QString(QChar(liter)));
+}
+
+bool ElemNumber::isNull() const
+{
+	return liter == 0 && num == 0;
+}
+
+QString Number::toString() const
+{
+	return first.toString() + (second.isNull()?"":("-"+second.toString()));
+}
+
+bool Number::isNull() const
+{
+	return first.isNull();
 }
