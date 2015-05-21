@@ -4,6 +4,8 @@
 
 #include "district.h"
 
+//#define PARSE_HOUSES
+
 QList<QRegExp> StreetParser::mStreetTypes;
 QStringList StreetParser::mStreetSecondaries;
 QStringList StreetParser::mPostfixes;
@@ -168,6 +170,9 @@ ElemHouse StreetParser::parseElemHouse(int &pos, const QString &name)
 QString StreetParser::normalize(QString name)
 {
 	init();
+	QStringList r = split(name);
+	QString s = join(r);
+	return s;
 	return join(split(name));
 }
 
@@ -178,8 +183,8 @@ QStringList StreetParser::split(QString name)
 	for(int i = 0; i < nfNumberOfFields; ++i)
 		res.append(QString());
 
-	QRegExp captureNum1("N\\s(\\d+)");
-	QString numRE = QString("\\b(\\d+)((%1)|-(%2))?\\b").
+	QRegExp captureNum1(QString("N\\s(\\d+(%1)?)").arg(mLAlpha.join("|")));
+	QString numRE = QString("(\\d+)((%1)|-(%2))").
 		arg(mLAlpha.join("|")).
 		arg(mPostfixes.join("|"));
 	QRegExp captureNum2(numRE);
@@ -194,6 +199,7 @@ QStringList StreetParser::split(QString name)
 		res[nfNumber] = captureNum2.cap(1) + captureNum2.cap(3);
 		n.remove(captureNum2);
 	}
+
 	foreach(QRegExp re, mStreetTypes)
 		if (re.indexIn(n) != -1) {
 			res[nfType] = re.cap(0).toLower();
@@ -222,9 +228,9 @@ QString StreetParser::join(QStringList names)
 {
 	init();
 	QStringList out;
-	out << names[nfNumber] << names[nfSecondary]
-	       << names[nfName] << names[nfType];
-	return names.join(' ').simplified();
+	out << (names[nfNumber].isEmpty()?"":("N "+names[nfNumber]))
+	    << names[nfSecondary] << names[nfName] << names[nfType];
+	return out.join(' ').simplified();
 }
 
 QList<House> StreetParser::splitHouses(QString houses)
@@ -238,23 +244,25 @@ QList<House> StreetParser::splitHouses(QString houses)
 	foreach(QString p, toParse) {
 		House house;
 		house.origin = p;
-//		int pos = 0;
-//		while(true) {
-//			ElemHouse eh = parseElemHouse(pos, p);
-//			if (eh.isNull())
-//				qDebug() << "Error HN" << p;
-//			else
-//				house.numbers.append(eh);
-//			if (pos < p.size()) {
-//				if (p.at(pos) == QChar('/'))
-//					++pos;
-//				else {
-//					qDebug() << "Error U" << p << pos << house.toString();
-//					break;
-//				}
-//			} else
-//				break;
-//		}
+#ifdef PARSE_HOUSES
+		int pos = 0;
+		while(true) {
+			ElemHouse eh = parseElemHouse(pos, p);
+			if (eh.isNull())
+				qDebug() << "Error HN" << p;
+			else
+				house.numbers.append(eh);
+			if (pos < p.size()) {
+				if (p.at(pos) == QChar('/'))
+					++pos;
+				else {
+					qDebug() << "Error U" << p << pos << house.toString();
+					break;
+				}
+			} else
+				break;
+		}
+#endif
 		res.append(house);
 	}
 
@@ -279,7 +287,7 @@ Street::Street(const QVariantMap &props, QObject *parent): QObject(parent)
 	} else {
 		mName = props.value("name").toString();
 		mType = props.value("type").toString();
-		mNumber = props.value("number").toInt();
+		mNumber = props.value("number").toString();
 		mHouses = StreetParser::splitHouses(props.value("houses").toString());
 		joinName();
 	}
@@ -457,11 +465,11 @@ void Street::parseName()
 
 	if (mType != list[nfType]) {
 		mType = list[nfType];
-		emit secondaryChanged(mType);
+		emit typeChanged(mType);
 	}
 	if (mNumber != list[nfNumber]) {
 		mNumber = list[nfNumber];
-		emit secondaryChanged(mNumber);
+		emit numberChanged(mNumber);
 	}
 	if (mName != list[nfName]) {
 		mName = list[nfName];
@@ -494,10 +502,14 @@ QStringList Street::nameList() const
 
 QString House::toString() const
 {
+#ifdef PARSE_HOUSES
 	QStringList res;
 	foreach(const ElemHouse& eh, numbers)
 		res.append(eh.toString());
 	return res.join('/');
+#else
+	return origin;
+#endif
 }
 
 QString ElemHouse::toString() const

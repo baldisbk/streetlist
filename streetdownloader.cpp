@@ -260,8 +260,8 @@ QList<StreetList::Request*> StreetList::parseDistrict(QIODevice *input, Request 
 				street = new Street(newreq->name);
 				QQmlEngine::setObjectOwnership(street, QQmlEngine::CppOwnership);
 				mStreets.insert(street->wholeName(), street);
-				requests.append(newreq);
-				++mStreetNum;
+				//requests.append(newreq);
+				//++mStreetNum;
 			} else
 				street = mStreets[newreq->name];
 			mDistricts[parent->name]->addStreet(street);

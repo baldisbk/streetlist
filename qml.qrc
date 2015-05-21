@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>ProgressBar.qml</file>
         <file>Button.qml</file>
+        <file>StreetDB.qml</file>
     </qresource>
 </RCC>

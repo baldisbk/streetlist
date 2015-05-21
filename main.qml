@@ -8,11 +8,13 @@ import QtQuick.LocalStorage 2.0
 Window {
 	id: mainwin
 	visible: true
-	height: 200
+	height: 350
 	width: 300
 
-	StreetList {
-		id: dwnld
+	StreetDB {id: database}
+
+	Connections {
+		target: database.streets
 		onProgress: {
 			var prg
 			if (max == 0)
@@ -59,21 +61,21 @@ Window {
 				width: mainwin.width / 3
 				anchors.top: parent.top
 				text: "Load web"
-				onClicked: dwnld.download()
+				onClicked: database.fromweb()
 			}
 			Button {
 				itemSize: 50
 				width: mainwin.width / 3
 				anchors.top: parent.top
 				text: "Load DB"
-				onClicked: mainwin.db.transaction(mainwin.load)
+				onClicked: database.fromdb()
 			}
 			Button {
 				itemSize: 50
 				width: mainwin.width / 3
 				anchors.top: parent.top
 				text: "Load files"
-				onClicked: dwnld.loadFiles()
+				onClicked: database.fromfiles()
 			}
 		}
 		Row {
@@ -86,21 +88,21 @@ Window {
 				width: mainwin.width / 3
 				anchors.top: parent.top
 				text: "Save"
-				onClicked: mainwin.db.transaction(mainwin.store)
+				onClicked: database.todb()
 			}
 			Button {
 				itemSize: 50
 				width: mainwin.width / 3
 				anchors.top: parent.top
 				text: "Check"
-				onClicked: dwnld.check()
+				onClicked: database.check()
 			}
 			Button {
 				itemSize: 50
 				width: mainwin.width / 3
 				anchors.top: parent.top
 				text: "Dump"
-				onClicked: mainwin.db.readTransaction(mainwin.dumpDb)
+				onClicked: database.dump()
 			}
 		}
 
@@ -153,137 +155,7 @@ Window {
 		}
 	}
 
-	property var db
-
-	function dumpDb(tx) {
-		var i
-		var str = tx.executeSql('SELECT * FROM TmpStr')
-		var dis = tx.executeSql('SELECT * FROM TmpDis')
-		var link = tx.executeSql('SELECT * FROM TmpStrInDis')
-		console.log('======== Database ========')
-		console.log('-------- Streets --------')
-		for (i = 0; i < str.rows.length; ++i)
-			console.log(str.rows.item(i).uid, str.rows.item(i).name, str.rows.item(i).houses, str.rows.item(i).type, str.rows.item(i).number)
-		console.log('-------- Districts --------')
-		for (i = 0; i < dis.rows.length; ++i)
-			console.log(dis.rows.item(i).uid, dis.rows.item(i).name, dis.rows.item(i).region)
-		console.log('-------- Links --------')
-		for (i = 0; i < link.rows.length; ++i)
-			console.log(link.rows.item(i).str, link.rows.item(i).dis)
-		console.log('======== App ========')
-
-		console.log('-------- Streets --------')
-		var streets = dwnld.streets()
-		for (i=0; i<streets.length; i++) {
-			var street = dwnld.street(streets[i])
-			console.log(street.name, street.type, street.number)
-		}
-		console.log('-------- Districts --------')
-		var districts = dwnld.districts()
-		var strt
-		for (i=0; i<districts.length; i++) {
-			var district = dwnld.district(districts[i])
-			console.log(district.name, district.region.name)
-			var strlist = district.streets
-			for (var s=0; s<strlist.length; ++s) {
-				strt = dwnld.street(strlist[s])
-				console.log("   ", strt.name, strt.number, strt.type)
-			}
-		}
-//		console.log('======== Query ========')
-//		var cust = tx.executeSql(query.text)
-//		streetmodel.filt(cust.rows)
-//		for (i = 0; i < cust.rows.length; ++i) {
-//			console.log('~~~~~~~~')
-//			for (var prop in cust.rows.item(i))
-//				console.log("    ", prop, "=", cust.rows.item(i)[prop])
-//		}
-		console.log('======== End dump ========')
-	}
-
-	function store(tx) {
-		var streets = dwnld.streets()
-		var districts = dwnld.districts()
-		var i
-		tx.executeSql('DELETE FROM TmpStr')
-		tx.executeSql('DELETE FROM TmpDis')
-		tx.executeSql('DELETE FROM TmpStrInDis')
-		for (i=0; i<streets.length; i++) {
-			var street = dwnld.street(streets[i])
-			tx.executeSql(
-				'INSERT INTO TmpStr(wname, name, houses, type, number) '+
-				'VALUES (?, ?, ?, ?, ?)',
-				[street.wholeName, street.name, street.houses, street.type, street.number])
-		}
-		for (i=0; i<districts.length; i++) {
-			var district = dwnld.district(districts[i])
-			var res = tx.executeSql(
-				'INSERT INTO TmpDis(name, region) '+
-				'VALUES (?, ?)',
-				[district.name, district.region.name])
-			var strlist = district.streets
-			for (var s=0; s<strlist.length; ++s) {
-				tx.executeSql(
-					'INSERT INTO TmpStrInDis(str, dis)'+
-					'SELECT uid, ? AS did FROM TmpStr WHERE wname=?',
-					[res.insertId, strlist[s]])
-			}
-		}
-	}
-
-	function load(tx) {
-		var res, i;
-
-		dwnld.clear();
-
-		res = tx.executeSql('SELECT * FROM TmpStr')
-		for (i = 0; i < res.rows.length; ++i)
-			dwnld.addStreet(res.rows.item(i));
-
-		res = tx.executeSql('SELECT DISTINCT region AS name FROM TmpDis')
-		for (i = 0; i < res.rows.length; ++i)
-			dwnld.addRegion(res.rows.item(i));
-
-		res = tx.executeSql('SELECT * FROM TmpDis')
-		for (i = 0; i < res.rows.length; ++i)
-			dwnld.addDistrict(res.rows.item(i));
-
-		res = tx.executeSql(
-			'SELECT TmpStr.wname AS street, TmpDis.name AS district'+
-			' FROM TmpStrInDis'+
-			' JOIN TmpDis ON TmpDis.uid=dis'+
-			' JOIN TmpStr ON TmpStr.uid=str')
-		for (i = 0; i < res.rows.length; ++i)
-			dwnld.addStreetToDistrict(res.rows.item(i));
-	}
-
-	function makedb(tx) {
-//		tx.executeSql(
-//			'CREATE TABLE IF NOT EXISTS TmpReg('+
-//			'uid INTEGER PRIMARY KEY AUTOINCREMENT,'+
-//			'name TEXT)')
-//		tx.executeSql('DROP TABLE IF EXISTS TmpStr')
-//		tx.executeSql('DROP TABLE IF EXISTS TmpDis')
-//		tx.executeSql('DROP TABLE IF EXISTS TmpStrInDis')
-		tx.executeSql(
-			'CREATE TABLE IF NOT EXISTS TmpDis('+
-			'uid INTEGER PRIMARY KEY AUTOINCREMENT,'+
-			'name TEXT,'+
-			'region INTEGER)')
-		tx.executeSql(
-			'CREATE TABLE IF NOT EXISTS TmpStr('+
-			'uid INTEGER PRIMARY KEY AUTOINCREMENT,'+
-			'wname TEXT,name TEXT,houses TEXT,type TEXT,'+
-			'number TEXT)')
-		tx.executeSql(
-			'CREATE TABLE IF NOT EXISTS TmpStrInDis('+
-			'str INTEGER,dis INTEGER)')
-	}
-
-	Component.onCompleted: {
-		db = LocalStorage.openDatabaseSync("TmpDB", "1.0", "", 0);
-		db.transaction(makedb)
-	}
+	Component.onCompleted: {database.init()}
 
 //	Plugin {
 //		id: somePlugin

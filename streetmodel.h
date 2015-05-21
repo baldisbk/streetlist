@@ -22,6 +22,7 @@ public:
 		NameRole,
 		TypeRole,
 		NumberRole,
+		SecondaryRole,
 		HousesRole
 	};
 
