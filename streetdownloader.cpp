@@ -101,6 +101,11 @@ QVariantMap StreetList::regionV(QString name) const
 	return res;
 }
 
+void StreetList::processEvents() const
+{
+	QCoreApplication::processEvents();
+}
+
 void StreetList::addStreet(const QVariantMap &props)
 {
 	Street* street = new Street(props);

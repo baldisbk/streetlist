@@ -48,6 +48,8 @@ public:
 	Q_INVOKABLE QVariantMap districtV(QString name) const;
 	Q_INVOKABLE QVariantMap regionV(QString name) const;
 
+	Q_INVOKABLE void processEvents() const;
+
 signals:
 	void progress(int val, int max, RType type);
 	void finished();

@@ -14,6 +14,12 @@ Window {
 	StreetDB {id: database}
 	StreetModel {id: streetmodel}
 
+	MultiProgressBar {
+		id: progressBars
+		mode: 0
+		anchors.fill: parent
+	}
+
 	Connections {
 		target: database
 		onSaving: {
@@ -43,12 +49,6 @@ Window {
 		}
 		onFinished: progressBars.mode = 0
 		onProgress: progressBars.progress(type, val, max)
-	}
-
-	Connections {
-		target: database.streets
-		onProgress: progressBars.progress(type, val, max)
-		onFinished: progressBars.mode = 0
 	}
 
 	Column {
@@ -117,15 +117,7 @@ Window {
 				left: parent.left
 				right: parent.right
 			}
-		}
-
-		MultiProgressBar {
-			id: progressBars
-			mode: 0
-			anchors {
-				left: parent.left
-				right: parent.right
-			}
+			visible: false
 		}
 	}
 

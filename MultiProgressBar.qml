@@ -1,21 +1,30 @@
 import QtQuick 2.0
 
-ListView {
-	id: progressBars
+Rectangle {
+
+	color: "#bf000000"
 	property int mode
-	property int valHeight: 20
-	height: progressModel.count * valHeight
-	model: ListModel {id: progressModel}
-	delegate: Component {
-		id: progressDelegate
-		ProgressBar {
-			caption: pbName
-			height: progressBars.valHeight
-			width: progressBars.width
-			percent: pbPercent
-			comment: pbValue + "/" + pbMax
+	z: 100
+
+	ListView {
+		id: progressBars
+		property int valHeight: 20
+		height: progressModel.count * valHeight
+		width: parent.width - 20
+		anchors.centerIn: parent
+		model: ListModel {id: progressModel}
+		delegate: Component {
+			id: progressDelegate
+			ProgressBar {
+				caption: pbName
+				height: progressBars.valHeight
+				width: progressBars.width
+				percent: pbPercent
+				comment: pbValue + "/" + pbMax
+			}
 		}
 	}
+
 	function clear() {progressModel.clear()}
 	function add(name) {
 		progressModel.append({
@@ -40,4 +49,5 @@ ListView {
 		progressModel.get(ind).pbValue = val
 		progressModel.get(ind).pbMax = max
 	}
+	visible: mode != 0
 }
