@@ -12,40 +12,43 @@ Window {
 	width: 300
 
 	StreetDB {id: database}
+	StreetModel {id: streetmodel}
+
+	Connections {
+		target: database
+		onSaving: {
+			if (progressBars.mode != 0) return
+			progressBars.mode = 1
+			progressBars.clear()
+			progressBars.add("Streets")
+			progressBars.add("Districts")
+		}
+		onLoading: {
+			if (progressBars.mode != 0) return
+			progressBars.mode = 2
+			progressBars.clear()
+			progressBars.add("Streets")
+			progressBars.add("Regions")
+			progressBars.add("Districts")
+			progressBars.add("Links")
+		}
+		onDownloading: {
+			if (progressBars.mode != 0) return
+			progressBars.mode = 3
+			progressBars.clear()
+			progressBars.add("City")
+			progressBars.add("Regions")
+			progressBars.add("Districts")
+			progressBars.add("Streets")
+		}
+		onFinished: progressBars.mode = 0
+		onProgress: progressBars.progress(type, val, max)
+	}
 
 	Connections {
 		target: database.streets
-		onProgress: {
-			var prg
-			if (max == 0)
-				prg = 0
-			else {
-				prg = val * 100
-				prg /= max
-			}
-			switch (type) {
-			case StreetList.RTCity:
-				cityProg.percent = prg
-				cityProg.comment = val + "/" + max
-				break
-			case StreetList.RTRegion:
-				regionProg.percent = prg
-				regionProg.comment = val + "/" + max
-				break
-			case StreetList.RTDistrict:
-				districtProg.percent = prg
-				districtProg.comment = val + "/" + max
-				break
-			case StreetList.RTStreet:
-				streetProg.percent = prg
-				streetProg.comment = val + "/" + max
-				break
-			}
-		}
-	}
-
-	StreetModel {
-		id: streetmodel
+		onProgress: progressBars.progress(type, val, max)
+		onFinished: progressBars.mode = 0
 	}
 
 	Column {
@@ -116,46 +119,17 @@ Window {
 			}
 		}
 
-		ProgressBar {
-			id: cityProg
-			caption: "City"
+		MultiProgressBar {
+			id: progressBars
+			mode: 0
 			anchors {
 				left: parent.left
 				right: parent.right
 			}
-			height: 50
-		}
-		ProgressBar {
-			id: regionProg
-			caption: "Regions"
-			anchors {
-				left: parent.left
-				right: parent.right
-			}
-			height: 50
-		}
-		ProgressBar {
-			id: districtProg
-			caption: "Districts"
-			anchors {
-				left: parent.left
-				right: parent.right
-			}
-			height: 50
-		}
-		ProgressBar {
-			id: streetProg
-			percent: 0
-			caption: "Streets"
-			anchors {
-				left: parent.left
-				right: parent.right
-			}
-			height: 50
 		}
 	}
 
-	Component.onCompleted: {database.init()}
+	Component.onCompleted: database.init()
 
 //	Plugin {
 //		id: somePlugin

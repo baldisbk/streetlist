@@ -1,6 +1,7 @@
 #include "streetdownloader.h"
 
 #include <QQmlEngine>
+#include <QCoreApplication>
 
 #include <QDebug>
 
@@ -8,8 +9,13 @@
 #include "district.h"
 #include "region.h"
 
+//#define NO_HOUSES
+
 StreetList::StreetList(QObject *parent) : QObject(parent)
 {
+	connect(&mManager, SIGNAL(finished(QNetworkReply*)),
+		this, SLOT(onReplyArrived(QNetworkReply*)));
+
 //	Street *a = new Street("1-я Какая-нить улица");
 //	Street *b = new Street("Проспектный проспект");
 //	Street *c = new Street("Бульвар Васи Пупкина");
@@ -169,7 +175,6 @@ void StreetList::onReplyError(QNetworkReply::NetworkError code)
 
 QList<StreetList::Request *> StreetList::parseRequest(QIODevice *input, StreetList::Request *parent)
 {
-	//qDebug() << "parsing" << parent->name << parent->url;
 	mRequests.remove(parent->url);
 	QList<Request*> newreqs;
 	switch (parent->type) {
@@ -260,8 +265,10 @@ QList<StreetList::Request*> StreetList::parseDistrict(QIODevice *input, Request 
 				street = new Street(newreq->name);
 				QQmlEngine::setObjectOwnership(street, QQmlEngine::CppOwnership);
 				mStreets.insert(street->wholeName(), street);
-				//requests.append(newreq);
-				//++mStreetNum;
+#ifndef NO_HOUSES
+				requests.append(newreq);
+				++mStreetNum;
+#endif
 			} else
 				street = mStreets[newreq->name];
 			mDistricts[parent->name]->addStreet(street);
@@ -289,8 +296,6 @@ QList<StreetList::Request*> StreetList::parseStreet(QIODevice *input, Request *p
 void StreetList::download()
 {
 	clear();
-	connect(&mManager, SIGNAL(finished(QNetworkReply*)),
-		this, SLOT(onReplyArrived(QNetworkReply*)));
 	QString url("http://mosopen.ru");
 	Request *req = new Request;
 	req->type = RTCity;
@@ -336,7 +341,9 @@ void StreetList::loadFiles()
 			continue;
 		}
 		parseRequest(&file, req);
+		QCoreApplication::processEvents();
 	}
+	emit finished();
 }
 
 void StreetList::check() const

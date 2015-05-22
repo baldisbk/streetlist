@@ -7,15 +7,22 @@ QtObject {
 
 	property var db
 
+	signal saving
+	signal loading
+	signal downloading
+
+	signal finished
+	signal progress(int type, int val, int max)
+
 	function init() {
 		db = LocalStorage.openDatabaseSync("TmpDB", "1.0", "", 0);
 		db.transaction(_makedb)
 	}
 	function dump() {db.readTransaction(_dump)}
-	function todb() {db.transaction(_store)}
-	function fromdb() {db.readTransaction(_load)}
-	function fromfiles() {streets.loadFiles()}
-	function fromweb() {streets.download()}
+	function todb() {saving(); db.transaction(_store); finished()}
+	function fromdb() {loading(); db.readTransaction(_load); finished()}
+	function fromfiles() {downloading(); streets.loadFiles()}
+	function fromweb() {downloading(); streets.download()}
 	function check() {streets.check()}
 
 	function _dump(tx) {
@@ -74,6 +81,7 @@ QtObject {
 		tx.executeSql('DELETE FROM TmpStr')
 		tx.executeSql('DELETE FROM TmpDis')
 		tx.executeSql('DELETE FROM TmpStrInDis')
+		progress(0, 0, strts.length)
 		for (i=0; i<strts.length; i++) {
 			var street = streets.street(strts[i])
 			tx.executeSql(
@@ -81,7 +89,9 @@ QtObject {
 				'VALUES (?, ?, ?, ?, ?, ?)',
 				[street.wholeName, street.name, street.secondary,
 				 street.houses, street.type, street.number])
+			progress(0, i+1, strts.length)
 		}
+		progress(1, 0, districts.length)
 		for (i=0; i<districts.length; i++) {
 			var district = streets.district(districts[i])
 			var res = tx.executeSql(
@@ -95,6 +105,7 @@ QtObject {
 					'SELECT uid, ? AS did FROM TmpStr WHERE wname=?',
 					[res.insertId, strlist[s]])
 			}
+			progress(1, i+1, districts.length)
 		}
 	}
 
@@ -104,24 +115,36 @@ QtObject {
 		streets.clear();
 
 		res = tx.executeSql('SELECT * FROM TmpStr')
-		for (i = 0; i < res.rows.length; ++i)
+		progress(0, 0, res.rows.length)
+		for (i = 0; i < res.rows.length; ++i) {
 			streets.addStreet(res.rows.item(i));
+			progress(0, i+1, res.rows.length)
+		}
 
 		res = tx.executeSql('SELECT DISTINCT region AS name FROM TmpDis')
-		for (i = 0; i < res.rows.length; ++i)
+		progress(1, 0, res.rows.length)
+		for (i = 0; i < res.rows.length; ++i) {
 			streets.addRegion(res.rows.item(i));
+			progress(1, i+1, res.rows.length)
+		}
 
 		res = tx.executeSql('SELECT * FROM TmpDis')
-		for (i = 0; i < res.rows.length; ++i)
+		progress(2, 0, res.rows.length)
+		for (i = 0; i < res.rows.length; ++i) {
 			streets.addDistrict(res.rows.item(i));
+			progress(2, i+1, res.rows.length)
+		}
 
 		res = tx.executeSql(
 			'SELECT TmpStr.wname AS street, TmpDis.name AS district'+
 			' FROM TmpStrInDis'+
 			' JOIN TmpDis ON TmpDis.uid=dis'+
 			' JOIN TmpStr ON TmpStr.uid=str')
-		for (i = 0; i < res.rows.length; ++i)
+		progress(3, 0, res.rows.length)
+		for (i = 0; i < res.rows.length; ++i) {
 			streets.addStreetToDistrict(res.rows.item(i));
+			progress(3, i+1, res.rows.length)
+		}
 	}
 
 	function _makedb(tx) {

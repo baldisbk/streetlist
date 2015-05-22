@@ -15,7 +15,7 @@ class StreetList : public QObject
 
 public:
 	enum RType {
-		RTCity,
+		RTCity = 0,
 		RTRegion,
 		RTDistrict,
 		RTStreet
