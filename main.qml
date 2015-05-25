@@ -1,14 +1,13 @@
 import QtQuick 2.4
 import QtQuick.Window 2.2
-import QtLocation 5.3
-import QtPositioning 5.2
+import QtQuick.Controls 1.3
+import QtQuick.Layouts 1.0
 import Streets 1.0
-import QtQuick.LocalStorage 2.0
 
 Window {
 	id: mainwin
 	visible: true
-	height: 350
+	height: 600
 	width: 300
 
 	StreetDB {id: database}
@@ -51,93 +50,75 @@ Window {
 		onProgress: progressBars.progress(type, val, max)
 	}
 
-	Column {
-		anchors.fill: parent
+	// page layout
 
-		Row {
-			anchors.left: parent.left
-			anchors.right: parent.right
-			height: 50
-
-			Button {
-				itemSize: 50
-				width: mainwin.width / 3
-				anchors.top: parent.top
-				text: "Load web"
-				onClicked: database.fromweb()
-			}
-			Button {
-				itemSize: 50
-				width: mainwin.width / 3
-				anchors.top: parent.top
-				text: "Load DB"
-				onClicked: database.fromdb()
-			}
-			Button {
-				itemSize: 50
-				width: mainwin.width / 3
-				anchors.top: parent.top
-				text: "Load files"
-				onClicked: database.fromfiles()
-			}
+	Mainmenu {
+		id: menu
+		anchors {
+			top: parent.top
+			left: parent.left
+			right: parent.right
 		}
-		Row {
-			anchors.left: parent.left
-			anchors.right: parent.right
-			height: 50
-
-			Button {
-				itemSize: 50
-				width: mainwin.width / 3
-				anchors.top: parent.top
-				text: "Save"
-				onClicked: database.todb()
-			}
-			Button {
-				itemSize: 50
-				width: mainwin.width / 3
-				anchors.top: parent.top
-				text: "Check"
-				onClicked: database.check()
-			}
-			Button {
-				itemSize: 50
-				width: mainwin.width / 3
-				anchors.top: parent.top
-				text: "Dump"
-				onClicked: database.dump()
-			}
+	}
+	Submenu {
+		id: submenu
+		anchors {
+			top: menu.bottom
+			left: parent.left
+			right: parent.right
 		}
-
-		TextInput {
-			id: query
-			text: "select * from TmpStr"
-			height: 50
-			anchors {
-				left: parent.left
-				right: parent.right
-			}
-			visible: false
+	}
+	Filter {
+		id: filters
+		anchors {
+			top: submenu.bottom
+			left: parent.left
+			right: parent.right
 		}
 	}
 
-	Component.onCompleted: database.init()
+	SplitView {
+		anchors {
+			top: filters.bottom
+			left: parent.left
+			right: parent.right
+			bottom: parent.bottom
+		}
+		orientation: Qt.Vertical
+		handleDelegate: Component {
+			Rectangle {
+				color: "black"
+				height: 5
+			}
+		}
 
-//	Plugin {
-//		id: somePlugin
-//		allowExperimental: true
-//		preferred: ["osm"]
-//	}
+		Item {
+			id: lists
+			Layout.minimumHeight: parent.height/4
+			Table {
+				id: streetlist
+				anchors {
+					left: parent.left
+					top: parent.top
+					bottom: parent.bottom
+					right: houselist.left
+				}
+			}
+			Houses {
+				id: houselist
+				anchors {
+					right: parent.right
+					top: parent.top
+					bottom: parent.bottom
+				}
+			}
+		}
+		Desc {id: description; Layout.minimumHeight: parent.height/4}
+		Maps {id: streetmap; Layout.minimumHeight: parent.height/4}
+	}
 
-//	Map {
-//		id: map
-//		plugin: somePlugin
-//		anchors.fill: parent
-//		center {
-//			latitude: -27
-//			longitude: 153
-//		}
-//		zoomLevel: map.minimumZoomLevel
-//		gesture.enabled: true
-//	}
+	Component.onCompleted: {
+		database.init()
+		database.fromdb()
+	}
 }
