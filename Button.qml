@@ -6,6 +6,8 @@ Rectangle {
 	property string image
 	property int itemSize
 	property int maxShift: 10
+	property bool checked: false
+	property bool checkable: false
 	signal clicked()
 	height: itemSize
 
@@ -16,6 +18,7 @@ Rectangle {
 		property int shift: 0
 		radius: 10
 		border.color: "black"
+		color: host.checked?"#FFFF88":"#00000000"
 	}
 	AutoLayout {
 		id: alo
@@ -48,7 +51,11 @@ Rectangle {
 	MouseArea {
 		id: mouseArea
 		anchors.fill: host
-		onClicked: host.clicked()
+		onClicked: {
+			if (host.checkable)
+				host.checked = !host.checked
+			host.clicked()
+		}
 	}
 
 	states: State {
