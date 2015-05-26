@@ -52,73 +52,33 @@ Window {
 
 	// page layout
 
-	Mainmenu {
-		id: menu
-		anchors {
-			top: parent.top
-			left: parent.left
-			right: parent.right
-		}
-	}
-	Submenu {
-		id: submenu
-		anchors {
-			top: menu.bottom
-			left: parent.left
-			right: parent.right
-		}
-	}
-	Filter {
-		id: filters
-		anchors {
-			top: submenu.bottom
-			left: parent.left
-			right: parent.right
-		}
-	}
-
-	SplitView {
-		anchors {
-			top: filters.bottom
-			left: parent.left
-			right: parent.right
-			bottom: parent.bottom
-		}
+	AutoLayout {
+		anchors.fill: parent
 		orientation: Qt.Vertical
-		handleDelegate: Component {
-			Rectangle {
-				color: "black"
-				height: 5
+		central: board
+		Mainmenu {id: menu}
+		Submenu {id: submenu}
+		Filter {id: filters}
+		SplitView {
+			id: board
+			height: 200
+			orientation: Qt.Vertical
+			handleDelegate: Component {Rectangle {color: "black"; height: 5}}
+			AutoLayout {
+				id: lists
+				orientation: Qt.Horizontal
+				Layout.minimumHeight: parent.height/4
+				central: streetlist
+				Table {id: streetlist}
+				Houses {id: houselist}
 			}
+			Desc {id: description; Layout.minimumHeight: parent.height/4}
+			Maps {id: streetmap; Layout.minimumHeight: parent.height/4}
 		}
-
-		Item {
-			id: lists
-			Layout.minimumHeight: parent.height/4
-			Table {
-				id: streetlist
-				anchors {
-					left: parent.left
-					top: parent.top
-					bottom: parent.bottom
-					right: houselist.left
-				}
-			}
-			Houses {
-				id: houselist
-				anchors {
-					right: parent.right
-					top: parent.top
-					bottom: parent.bottom
-				}
-			}
-		}
-		Desc {id: description; Layout.minimumHeight: parent.height/4}
-		Maps {id: streetmap; Layout.minimumHeight: parent.height/4}
 	}
 
 	Component.onCompleted: {
 		database.init()
-		database.fromdb()
+		//database.fromdb()
 	}
 }

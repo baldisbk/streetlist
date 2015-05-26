@@ -12,5 +12,6 @@
         <file>Submenu.qml</file>
         <file>Maps.qml</file>
         <file>Houses.qml</file>
+        <file>AutoLayout.qml</file>
     </qresource>
 </RCC>
