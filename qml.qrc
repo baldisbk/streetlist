@@ -13,5 +13,6 @@
         <file>Maps.qml</file>
         <file>Houses.qml</file>
         <file>AutoLayout.qml</file>
+        <file>pics/test.png</file>
     </qresource>
 </RCC>

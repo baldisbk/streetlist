@@ -1,11 +1,15 @@
 import QtQuick 2.0
 
 Rectangle {
-	color: "red"
+	id: host
 	height: 50
-	Text {
-		text: "Menu"
-		anchors.centerIn: parent
+	Row {
+		Button {
+			id: test
+			image: "qrc:/pics/test.png"
+			width: 50
+			height: 50
+		}
 	}
 }
 
