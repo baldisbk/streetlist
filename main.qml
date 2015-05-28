@@ -8,7 +8,7 @@ Window {
 	id: mainwin
 	visible: true
 	height: 600
-	width: 300
+	width: 500
 
 	StreetDB {id: database}
 	StreetModel {id: streetmodel}
@@ -50,6 +50,61 @@ Window {
 		onProgress: progressBars.progress(type, val, max)
 	}
 
+	Item {
+		id: stateHolder
+		states: [
+			State {
+				name: "filter"
+				PropertyChanges {target: submenu; visible: false}
+				PropertyChanges {target: filters; visible: true}
+				PropertyChanges {target: lists; visible: true; Layout.fillWidth: true}
+				PropertyChanges {target: description; visible: false}
+				PropertyChanges {target: streetmap; visible: false}
+			},
+			State {
+				name: "search"
+				PropertyChanges {target: submenu; visible: true}
+				PropertyChanges {target: filters; visible: false}
+				PropertyChanges {target: lists; visible: true; Layout.fillWidth: true}
+				PropertyChanges {target: description; visible: false}
+				PropertyChanges {target: streetmap; visible: false}
+			},
+			State {
+				name: "map"
+				PropertyChanges {target: submenu; visible: false}
+				PropertyChanges {target: filters; visible: false}
+				PropertyChanges {target: lists; visible: true}
+				PropertyChanges {target: description; visible: false}
+				PropertyChanges {target: streetmap; visible: true; Layout.fillWidth: true}
+			},
+			State {
+				name: "description"
+				PropertyChanges {target: submenu; visible: false}
+				PropertyChanges {target: filters; visible: false}
+				PropertyChanges {target: lists; visible: true}
+				PropertyChanges {target: description; visible: true; Layout.fillWidth: true}
+				PropertyChanges {target: streetmap; visible: false}
+			},
+			State {
+				name: "edit"
+				PropertyChanges {target: submenu; visible: false}
+				PropertyChanges {target: filters; visible: false}
+				PropertyChanges {target: lists; visible: true}
+				PropertyChanges {target: description; visible: true; Layout.fillWidth: true}
+				PropertyChanges {target: streetmap; visible: false}
+			},
+			State {
+				name: "database"
+				PropertyChanges {target: submenu; visible: false}
+				PropertyChanges {target: filters; visible: false}
+				PropertyChanges {target: lists; visible: false}
+				PropertyChanges {target: description; visible: false}
+				PropertyChanges {target: streetmap; visible: false}
+			}
+		]
+		state: menu.state
+	}
+
 	// page layout
 
 	AutoLayout {
@@ -67,13 +122,12 @@ Window {
 			AutoLayout {
 				id: lists
 				orientation: Qt.Horizontal
-				Layout.minimumHeight: parent.height/4
 				central: streetlist
 				Table {id: streetlist}
 				Houses {id: houselist}
 			}
-			Desc {id: description; Layout.minimumHeight: parent.height/4}
-			Maps {id: streetmap; Layout.minimumHeight: parent.height/4}
+			Desc {id: description}
+			Maps {id: streetmap}
 		}
 	}
 

@@ -10,6 +10,7 @@ Rectangle {
 	property bool checkable: false
 	signal clicked()
 	height: itemSize
+	color: "#00000000"
 
 	Rectangle {
 		id: bord
