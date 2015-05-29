@@ -139,7 +139,6 @@ Window {
 						description.visible = false
 						streetmap.visible = false
 						lists.visible = false
-						console.log(dbpage.height)
 					}
 				}
 				PropertyChanges {target: submenu; visible: false}

@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pics/Clenched Fist-32.png</file>
+        <file>pics/Database-32.png</file>
+        <file>pics/Edit-32.png</file>
+        <file>pics/Filter-32.png</file>
+        <file>pics/List-32.png</file>
+        <file>pics/Map-32.png</file>
+        <file>pics/Ruler-32.png</file>
+        <file>pics/Search-32.png</file>
+        <file>pics/View Details-32.png</file>
+        <file>pics/Waypoint Map-32.png</file>
+    </qresource>
+</RCC>

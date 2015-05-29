@@ -13,13 +13,6 @@
         <file>Maps.qml</file>
         <file>Houses.qml</file>
         <file>AutoLayout.qml</file>
-        <file>pics/Database-32.png</file>
-        <file>pics/Edit-32.png</file>
-        <file>pics/Filter-32.png</file>
-        <file>pics/List-32.png</file>
-        <file>pics/Map-32.png</file>
-        <file>pics/Search-32.png</file>
-        <file>pics/View Details-32.png</file>
         <file>Splitter.qml</file>
         <file>DBPage.qml</file>
     </qresource>

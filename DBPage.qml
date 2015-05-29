@@ -13,7 +13,6 @@ Item {
 				width: 200
 				onClicked: db.todb();
 			}
-			onWidthChanged: console.log("w", width)
 		}
 		AutoLayout {
 			orientation: Qt.Horizontal
