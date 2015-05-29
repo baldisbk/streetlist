@@ -20,5 +20,6 @@
         <file>pics/Map-32.png</file>
         <file>pics/Search-32.png</file>
         <file>pics/View Details-32.png</file>
+        <file>Splitter.qml</file>
     </qresource>
 </RCC>
