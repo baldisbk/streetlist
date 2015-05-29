@@ -59,12 +59,14 @@ Window {
 					script: {
 						lists.visible = true
 						board.central = lists
+						dbpage.visible = false
 						description.visible = false
 						streetmap.visible = false
 					}
 				}
 				PropertyChanges {target: submenu; visible: false}
 				PropertyChanges {target: filters; visible: true}
+				PropertyChanges {target: dbpage; visible: false}
 			},
 			State {
 				name: "search"
@@ -73,11 +75,13 @@ Window {
 						lists.visible = true
 						board.central = lists
 						description.visible = false
+						dbpage.visible = false
 						streetmap.visible = false
 					}
 				}
 				PropertyChanges {target: submenu; visible: true}
 				PropertyChanges {target: filters; visible: false}
+				PropertyChanges {target: dbpage; visible: false}
 			},
 			State {
 				name: "map"
@@ -87,11 +91,13 @@ Window {
 						streetmap.visible = true
 						board.central = streetmap
 						description.visible = false
+						dbpage.visible = false
 						lists.height = 150
 					}
 				}
 				PropertyChanges {target: submenu; visible: false}
 				PropertyChanges {target: filters; visible: false}
+				PropertyChanges {target: dbpage; visible: false}
 			},
 			State {
 				name: "description"
@@ -101,11 +107,13 @@ Window {
 						description.visible = true
 						board.central = description
 						streetmap.visible = false
+						dbpage.visible = false
 						lists.height = 150
 					}
 				}
 				PropertyChanges {target: submenu; visible: false}
 				PropertyChanges {target: filters; visible: false}
+				PropertyChanges {target: dbpage; visible: false}
 			},
 			State {
 				name: "edit"
@@ -115,6 +123,7 @@ Window {
 						description.visible = true
 						board.central = description
 						streetmap.visible = false
+						dbpage.visible = false
 						lists.height = 150
 					}
 				}
@@ -123,11 +132,18 @@ Window {
 			},
 			State {
 				name: "database"
+				StateChangeScript {
+					script: {
+						dbpage.visible = true
+						board.central = dbpage
+						description.visible = false
+						streetmap.visible = false
+						lists.visible = false
+						console.log(dbpage.height)
+					}
+				}
 				PropertyChanges {target: submenu; visible: false}
 				PropertyChanges {target: filters; visible: false}
-				PropertyChanges {target: lists; visible: false}
-				PropertyChanges {target: description; visible: false}
-				PropertyChanges {target: streetmap; visible: false}
 			}
 		]
 		state: menu.state
@@ -152,6 +168,7 @@ Window {
 				Table {id: streetlist}
 				Houses {id: houselist}
 			}
+			DBPage {id: dbpage; db: database}
 			Desc {id: description}
 			Maps {id: streetmap}
 		}
