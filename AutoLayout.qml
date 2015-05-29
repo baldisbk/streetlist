@@ -4,9 +4,15 @@ Item {
 	property int orientation
 	property Item central
 	function init() {
-		var prev
+		var prev, i
+		for (i = 0; i < children.length; ++i) {
+			children[i].anchors.top = undefined
+			children[i].anchors.left = undefined
+			children[i].anchors.right = undefined
+			children[i].anchors.bottom = undefined
+		}
 		var wasCenter = false
-		for (var i = 0; i < visibleChildren.length; ++i) {
+		for (i = 0; i < visibleChildren.length; ++i) {
 			var curr = visibleChildren[i]
 			if (orientation == Qt.Vertical) {
 				if (i != 0) {
@@ -45,6 +51,7 @@ Item {
 		}
 	}
 	onVisibleChildrenChanged: init()
+	onCentralChanged: init()
 	Component.onCompleted: init()
 }
 

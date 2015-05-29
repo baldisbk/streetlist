@@ -55,43 +55,71 @@ Window {
 		states: [
 			State {
 				name: "filter"
+				StateChangeScript {
+					script: {
+						lists.visible = true
+						board.central = lists
+						description.visible = false
+						streetmap.visible = false
+					}
+				}
 				PropertyChanges {target: submenu; visible: false}
 				PropertyChanges {target: filters; visible: true}
-				PropertyChanges {target: lists; visible: true; Layout.fillWidth: true}
-				PropertyChanges {target: description; visible: false}
-				PropertyChanges {target: streetmap; visible: false}
 			},
 			State {
 				name: "search"
+				StateChangeScript {
+					script: {
+						lists.visible = true
+						board.central = lists
+						description.visible = false
+						streetmap.visible = false
+					}
+				}
 				PropertyChanges {target: submenu; visible: true}
 				PropertyChanges {target: filters; visible: false}
-				PropertyChanges {target: lists; visible: true; Layout.fillWidth: true}
-				PropertyChanges {target: description; visible: false}
-				PropertyChanges {target: streetmap; visible: false}
 			},
 			State {
 				name: "map"
+				StateChangeScript {
+					script: {
+						lists.visible = true
+						streetmap.visible = true
+						board.central = streetmap
+						description.visible = false
+						lists.height = 150
+					}
+				}
 				PropertyChanges {target: submenu; visible: false}
 				PropertyChanges {target: filters; visible: false}
-				PropertyChanges {target: lists; visible: true}
-				PropertyChanges {target: description; visible: false}
-				PropertyChanges {target: streetmap; visible: true; Layout.fillWidth: true}
 			},
 			State {
 				name: "description"
+				StateChangeScript {
+					script: {
+						lists.visible = true
+						description.visible = true
+						board.central = description
+						streetmap.visible = false
+						lists.height = 150
+					}
+				}
 				PropertyChanges {target: submenu; visible: false}
 				PropertyChanges {target: filters; visible: false}
-				PropertyChanges {target: lists; visible: true}
-				PropertyChanges {target: description; visible: true; Layout.fillWidth: true}
-				PropertyChanges {target: streetmap; visible: false}
 			},
 			State {
 				name: "edit"
+				StateChangeScript {
+					script: {
+						lists.visible = true
+						description.visible = true
+						board.central = description
+						streetmap.visible = false
+						lists.height = 150
+					}
+				}
 				PropertyChanges {target: submenu; visible: false}
 				PropertyChanges {target: filters; visible: false}
-				PropertyChanges {target: lists; visible: true}
-				PropertyChanges {target: description; visible: true; Layout.fillWidth: true}
-				PropertyChanges {target: streetmap; visible: false}
 			},
 			State {
 				name: "database"
@@ -114,11 +142,9 @@ Window {
 		Mainmenu {id: menu}
 		Submenu {id: submenu}
 		Filter {id: filters}
-		SplitView {
+		AutoLayout {
 			id: board
-			height: 200
 			orientation: Qt.Vertical
-			handleDelegate: Component {Rectangle {color: "black"; height: 5}}
 			AutoLayout {
 				id: lists
 				orientation: Qt.Horizontal

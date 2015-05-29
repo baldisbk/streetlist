@@ -3,7 +3,6 @@ import QtQuick 2.0
 Rectangle {
 	id: host
 	height: 50
-	onStateChanged: console.log(state)
 	state: "search"
 	states: [
 		State {
