@@ -27,7 +27,7 @@ QtObject {
 	function dump() {db.readTransaction(_dump)}
 	function todb() {saving(); db.transaction(_store); finished()}
 	function fromdb() {loading(); db.readTransaction(_load); finished()}
-	function fromfiles() {downloading(); streets.loadFiles()}
+	function fromfiles(path) {downloading(); streets.loadFiles(path)}
 	function fromweb() {downloading(); streets.download()}
 	function check() {streets.check()}
 

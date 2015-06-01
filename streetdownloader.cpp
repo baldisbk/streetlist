@@ -318,15 +318,13 @@ void StreetList::download()
 		this, SLOT(onReplyError(QNetworkReply::NetworkError)));
 }
 
-void StreetList::loadFiles()
+void StreetList::loadFiles(QString dirName)
 {
 	clear();
-	QString path("/home/baldis/Documents/maps/maps/tmp/");
-	QString url("main");
 	Request *req = new Request;
 	req->type = RTCity;
-	req->url = url;
-	mRequests.insert(url, req);
+	req->url = "main";
+	mRequests.insert(req->url, req);
 	emit progress(0, 1, RTCity);
 	emit progress(0, 0, RTRegion);
 	emit progress(0, 0, RTDistrict);
@@ -337,7 +335,7 @@ void StreetList::loadFiles()
 	while(!mRequests.isEmpty()) {
 		Request* req = mRequests.first();
 		int section = (req->type == RTDistrict)?-2:-1;
-		QString name = path + req->url.section("/", section, section) + ".html";
+		QString name = dirName + '/' + req->url.section("/", section, section) + ".html";
 		QFile file(name);
 		if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
 			qDebug() << name << "not found";

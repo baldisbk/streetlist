@@ -57,7 +57,7 @@ signals:
 
 public slots:
 	void download();
-	void loadFiles();
+	void loadFiles(QString dirName);
 	void check() const;
 	void clear();
 
