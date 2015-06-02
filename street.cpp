@@ -288,6 +288,7 @@ Street::Street(const QVariantMap &props, QObject *parent): QObject(parent)
 		mName = props.value("name").toString();
 		mType = props.value("type").toString();
 		mNumber = props.value("number").toString();
+		mSecondary = props.value("sec").toString();
 		mHouses = StreetParser::splitHouses(props.value("houses").toString());
 		joinName();
 	}
