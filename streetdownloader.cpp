@@ -9,7 +9,7 @@
 #include "district.h"
 #include "region.h"
 
-//#define NO_HOUSES
+#define NO_HOUSES
 
 StreetList::StreetList(QObject *parent) : QObject(parent)
 {

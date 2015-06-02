@@ -2,6 +2,7 @@ import QtQuick 2.0
 
 Item {
 	property StreetDB db
+	property string filePath: fileinput.text
 	AutoLayout {
 		anchors.fill: parent
 		orientation: Qt.Vertical
