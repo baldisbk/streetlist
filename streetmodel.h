@@ -35,14 +35,14 @@ public:
 	virtual QVariant data(const QModelIndex &index, int role) const;
 	virtual QHash<int, QByteArray> roleNames() const;
 
-	Q_INVOKABLE void filt(const QVariant &streets);
-
 	Q_PROPERTY(StreetList* host READ host WRITE setHost NOTIFY hostChanged)
 
 	StreetList* host() const;
 
 public slots:
 	void setHost(StreetList* host);
+
+	void reload();
 
 signals:
 	void hostChanged(StreetList* host);

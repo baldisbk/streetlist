@@ -3,7 +3,7 @@
 #include <QJSValueIterator>
 
 StreetModel::StreetModel(QObject *parent):
-	QAbstractItemModel(parent)
+	QAbstractItemModel(parent), mHost(NULL)
 {
 }
 
@@ -58,6 +58,8 @@ QVariant StreetModel::data(const QModelIndex &index, int role) const
 		return street->number();
 	case HousesRole:
 		return street->houses();
+	case SecondaryRole:
+		return street->secondary();
 	default:;
 	}
 	return QVariant();
@@ -71,32 +73,8 @@ QHash<int, QByteArray> StreetModel::roleNames() const
 	res[TypeRole] = "type";
 	res[NumberRole] = "number";
 	res[HousesRole] = "houses";
+	res[SecondaryRole] = "secondary";
 	return res;
-}
-
-void dump(const QJSValue& v)
-{
-	QJSValueIterator it(v);
-	qDebug() << "===DUMP";
-	while (it.hasNext()) {
-		it.next();
-		qDebug() << it.name() << ": " << it.value().toString();
-	}
-}
-
-void StreetModel::filt(const QVariant &streets)
-{
-	QJSValue value = streets.value<QJSValue>();
-	int len = value.property("length").toInt();
-	dump(value);
-	for (int i = 0; i < len; ++i) {
-		QJSValueList list;
-		list.append(QJSValue(i));
-		QJSValue line = value.property("item").call(list);
-		dump(line);
-		//QJSValue line = value.property("item").call(QJSValueList() << QJSValue(i));
-		//qDebug() << line.property("name").toString();
-	}
 }
 
 StreetList *StreetModel::host() const
@@ -110,5 +88,24 @@ void StreetModel::setHost(StreetList *host)
 		return;
 
 	mHost = host;
+
+	if (host) {
+		beginResetModel();
+		QStringList streets = host->streets();
+		mStreets.clear();
+		foreach (QString street, streets)
+			mStreets.append(host->street(street));
+		endResetModel();
+	} else
+		mStreets.clear();
+
 	emit hostChanged(host);
+}
+
+void StreetModel::reload()
+{
+	// TODO dirty
+	StreetList* list = host();
+	setHost(NULL);
+	setHost(list);
 }

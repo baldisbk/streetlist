@@ -10,8 +10,11 @@ Window {
 	height: 600
 	width: 500
 
-	StreetDB {id: database}
-	StreetModel {id: streetmodel}
+	StreetDB {
+		id: database
+		onFinished: streetmodel.reload()
+	}
+	StreetModel {id: streetmodel; host: database.streets}
 
 	MultiProgressBar {
 		id: progressBars
@@ -164,7 +167,10 @@ Window {
 				id: lists
 				orientation: Qt.Horizontal
 				central: streetlist
-				Table {id: streetlist}
+				Table {
+					id: streetlist
+					model: streetmodel
+				}
 				Houses {id: houselist}
 			}
 			DBPage {id: dbpage; db: database}
@@ -175,6 +181,6 @@ Window {
 
 	Component.onCompleted: {
 		database.init()
-		//database.fromdb()
+		database.fromdb()
 	}
 }
