@@ -4,52 +4,69 @@ import Streets 1.0
 Rectangle {
 	id: host
 	property StreetModel model
+	signal selected(string wname)
 	Component {
 		id: tableDelegate
-		Row {
-			Rectangle {
-				border.width: 1
-				Text {
-					text: secondary
-					anchors.fill: parent
-					horizontalAlignment: Text.AlignLeft
-					verticalAlignment: Text.AlignVCenter
+		Rectangle {
+			height: 20
+			width: 600
+			color: "#00000000"
+			MouseArea {
+				anchors.fill: parent
+				onClicked: {
+					list.currentIndex = index
+					host.selected(wholeName)
 				}
-				height: 20
-				width: 100
 			}
-			Rectangle {
-				border.width: 1
-				Text {
-					text: name
-					anchors.fill: parent
-					horizontalAlignment: Text.AlignLeft
-					verticalAlignment: Text.AlignVCenter
+			Row {
+				Rectangle {
+					border.width: 1
+					Text {
+						text: secondary
+						anchors.fill: parent
+						horizontalAlignment: Text.AlignLeft
+						verticalAlignment: Text.AlignVCenter
+					}
+					height: 20
+					width: 100
+					color: "#00000000"
 				}
-				height: 20
-				width: 300
-			}
-			Rectangle {
-				border.width: 1
-				Text {
-					text: number
-					anchors.fill: parent
-					horizontalAlignment: Text.AlignLeft
-					verticalAlignment: Text.AlignVCenter
+				Rectangle {
+					border.width: 1
+					Text {
+						text: name
+						anchors.fill: parent
+						horizontalAlignment: Text.AlignLeft
+						verticalAlignment: Text.AlignVCenter
+					}
+					height: 20
+					width: 300
+					color: "#00000000"
 				}
-				height: 20
-				width: 50
-			}
-			Rectangle {
-				border.width: 1
-				Text {
-					text: type
-					anchors.fill: parent
-					horizontalAlignment: Text.AlignLeft
-					verticalAlignment: Text.AlignVCenter
+				Rectangle {
+					border.width: 1
+					Text {
+						text: number
+						anchors.fill: parent
+						horizontalAlignment: Text.AlignLeft
+						verticalAlignment: Text.AlignVCenter
+					}
+					height: 20
+					width: 50
+					color: "#00000000"
 				}
-				height: 20
-				width: 150
+				Rectangle {
+					border.width: 1
+					Text {
+						text: type
+						anchors.fill: parent
+						horizontalAlignment: Text.AlignLeft
+						verticalAlignment: Text.AlignVCenter
+					}
+					height: 20
+					width: 150
+					color: "#00000000"
+				}
 			}
 		}
 	}
@@ -68,6 +85,14 @@ Rectangle {
 				width: 600
 				height: view.height
 				delegate: tableDelegate
+				highlight: Component {
+					id: highlightBar
+					Rectangle {
+						width: list.width; height: 20
+						color: "#FFFF88"
+					}
+				}
+				highlightMoveDuration: 0
 			}
 		}
 	}
