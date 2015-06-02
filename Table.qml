@@ -9,7 +9,6 @@ Rectangle {
 		id: tableDelegate
 		Rectangle {
 			height: 20
-			width: 600
 			color: "#00000000"
 			MouseArea {
 				anchors.fill: parent
@@ -19,54 +18,17 @@ Rectangle {
 				}
 			}
 			Row {
-				Rectangle {
-					border.width: 1
-					Text {
-						text: secondary
-						anchors.fill: parent
-						horizontalAlignment: Text.AlignLeft
-						verticalAlignment: Text.AlignVCenter
-					}
-					height: 20
-					width: 100
-					color: "#00000000"
-				}
-				Rectangle {
-					border.width: 1
-					Text {
-						text: name
-						anchors.fill: parent
-						horizontalAlignment: Text.AlignLeft
-						verticalAlignment: Text.AlignVCenter
-					}
-					height: 20
-					width: 300
-					color: "#00000000"
-				}
-				Rectangle {
-					border.width: 1
-					Text {
-						text: number
-						anchors.fill: parent
-						horizontalAlignment: Text.AlignLeft
-						verticalAlignment: Text.AlignVCenter
-					}
-					height: 20
-					width: 50
-					color: "#00000000"
-				}
-				Rectangle {
-					border.width: 1
-					Text {
-						text: type
-						anchors.fill: parent
-						horizontalAlignment: Text.AlignLeft
-						verticalAlignment: Text.AlignVCenter
-					}
-					height: 20
-					width: 150
-					color: "#00000000"
-				}
+				id: row
+				TableCell {text: secondary; width: 100}
+				TableCell {text: name; width: 300}
+				TableCell {text: number; width: 50}
+				TableCell {text: type; width: 150}
+			}
+			Component.onCompleted: {
+				var w = 0
+				for (var i = 0; i < row.children.length; ++i)
+					w += row.children[i].width
+				width = w
 			}
 		}
 	}

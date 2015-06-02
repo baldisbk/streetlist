@@ -15,5 +15,6 @@
         <file>AutoLayout.qml</file>
         <file>Splitter.qml</file>
         <file>DBPage.qml</file>
+        <file>TableCell.qml</file>
     </qresource>
 </RCC>
