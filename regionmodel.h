@@ -1,26 +1,21 @@
-#ifndef STREETMODEL_H
-#define STREETMODEL_H
+#ifndef REGIONMODEL_H
+#define REGIONMODEL_H
 
 #include <QAbstractItemModel>
 
 #include "streetdownloader.h"
 
-class StreetModel : public QAbstractItemModel
+class RegionModel : public QAbstractItemModel
 {
 	Q_OBJECT
 	Q_ENUMS(Roles)
 public:
-	StreetModel(QObject* parent = NULL);
-	StreetModel(StreetList* host, QObject* parent = NULL);
-	~StreetModel();
+	RegionModel(QObject* parent = NULL);
+	RegionModel(StreetList* host, QObject* parent = NULL);
+	~RegionModel();
 
 	enum Roles {
-		WholeNameRole = Qt::UserRole + 1,
-		NameRole,
-		TypeRole,
-		NumberRole,
-		SecondaryRole,
-		HousesRole
+		NameRole = Qt::UserRole + 1
 	};
 
 	// QAbstractItemModel interface
@@ -45,8 +40,8 @@ signals:
 	void hostChanged(StreetList* host);
 
 private:
-	QList<Street*> mStreets;
+	QList<Region*> mRegions;
 	StreetList* mHost;
 };
 
-#endif // STREETMODEL_H
+#endif // REGIONMODEL_H

@@ -1,26 +1,21 @@
-#ifndef STREETMODEL_H
-#define STREETMODEL_H
+#ifndef HOUSEMODEL_H
+#define HOUSEMODEL_H
 
 #include <QAbstractItemModel>
 
 #include "streetdownloader.h"
 
-class StreetModel : public QAbstractItemModel
+class HouseModel : public QAbstractItemModel
 {
 	Q_OBJECT
 	Q_ENUMS(Roles)
 public:
-	StreetModel(QObject* parent = NULL);
-	StreetModel(StreetList* host, QObject* parent = NULL);
-	~StreetModel();
+	HouseModel(QObject* parent = NULL);
+	HouseModel(StreetList* host, QObject* parent = NULL);
+	~HouseModel();
 
 	enum Roles {
-		WholeNameRole = Qt::UserRole + 1,
-		NameRole,
-		TypeRole,
-		NumberRole,
-		SecondaryRole,
-		HousesRole
+		NameRole = Qt::UserRole + 1
 	};
 
 	// QAbstractItemModel interface
@@ -33,20 +28,25 @@ public:
 	virtual QHash<int, QByteArray> roleNames() const;
 
 	Q_PROPERTY(StreetList* host READ host WRITE setHost NOTIFY hostChanged)
+	Q_PROPERTY(QString street READ street WRITE setStreet NOTIFY streetChanged)
 
 	StreetList* host() const;
+	QString street() const;
 
 public slots:
 	void setHost(StreetList* host);
+	void setStreet(QString arg);
 
 	void reload();
 
 signals:
 	void hostChanged(StreetList* host);
+	void streetChanged(QString arg);
 
 private:
-	QList<Street*> mStreets;
+	QStringList mHouses;
 	StreetList* mHost;
+	QString mStreet;
 };
 
-#endif // STREETMODEL_H
+#endif // HOUSEMODEL_H

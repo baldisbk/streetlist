@@ -1,6 +1,6 @@
 #include "streetmodel.h"
-#include <QJSValue>
-#include <QJSValueIterator>
+
+#include "street.h"
 
 StreetModel::StreetModel(QObject *parent):
 	QAbstractItemModel(parent), mHost(NULL)
@@ -88,24 +88,18 @@ void StreetModel::setHost(StreetList *host)
 		return;
 
 	mHost = host;
-
-	if (host) {
-		beginResetModel();
-		QStringList streets = host->streets();
-		mStreets.clear();
-		foreach (QString street, streets)
-			mStreets.append(host->street(street));
-		endResetModel();
-	} else
-		mStreets.clear();
-
+	reload();
 	emit hostChanged(host);
 }
 
 void StreetModel::reload()
 {
-	// TODO dirty
-	StreetList* list = host();
-	setHost(NULL);
-	setHost(list);
+	beginResetModel();
+	mStreets.clear();
+	if (mHost) {
+		QStringList streets = mHost->streets();
+		foreach (QString street, streets)
+			mStreets.append(mHost->street(street));
+	}
+	endResetModel();
 }

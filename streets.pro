@@ -7,7 +7,10 @@ SOURCES += main.cpp \
     streetmodel.cpp \
     street.cpp \
     region.cpp \
-    district.cpp
+    district.cpp \
+    districtmodel.cpp \
+    regionmodel.cpp \
+    housemodel.cpp
 
 RESOURCES += qml.qrc \
     pictures.qrc
@@ -23,4 +26,7 @@ HEADERS += \
     streetmodel.h \
     street.h \
     region.h \
-    district.h
+    district.h \
+    districtmodel.h \
+    regionmodel.h \
+    housemodel.h
