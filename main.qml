@@ -15,6 +15,7 @@ Window {
 		onFinished: streetmodel.reload()
 	}
 	StreetModel {id: streetmodel; host: database.streets}
+	HouseModel {id: housemodel; host: database.streets; street: streetlist.selected}
 
 	MultiProgressBar {
 		id: progressBars
@@ -167,11 +168,9 @@ Window {
 				id: lists
 				orientation: Qt.Horizontal
 				central: streetlist
-				Streets {
-					id: streetlist
-					model: streetmodel
-				}
-				Houses {id: houselist}
+				Streets {id: streetlist; model: streetmodel}
+				Rectangle {width: 10; border.width: 1}
+				Houses {id: houselist; model: housemodel}
 			}
 			DBPage {id: dbpage; db: database}
 			Desc {id: description}

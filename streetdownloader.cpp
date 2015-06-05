@@ -9,31 +9,12 @@
 #include "district.h"
 #include "region.h"
 
-#define NO_HOUSES
+//#define NO_HOUSES
 
 StreetList::StreetList(QObject *parent) : QObject(parent)
 {
 	connect(&mManager, SIGNAL(finished(QNetworkReply*)),
 		this, SLOT(onReplyArrived(QNetworkReply*)));
-
-//	Street *a = new Street("1-я Какая-нить улица");
-//	Street *b = new Street("Проспектный проспект");
-//	Street *c = new Street("Бульвар Васи Пупкина");
-//	Region *r = new Region("ДАО");
-//	District *d = new District("Район");
-//	District *e = new District("Раён");
-//	r->addDistrict(d);
-//	r->addDistrict(e);
-//	d->addStreet(a);
-//	d->addStreet(b);
-//	e->addStreet(b);
-//	e->addStreet(c);
-//	mStreets[a->wholeName()] = a;
-//	mStreets[b->wholeName()] = b;
-//	mStreets[c->wholeName()] = c;
-//	mDistricts[d->name()] = d;
-//	mDistricts[e->name()] = e;
-//	mRegions[r->name()] = r;
 }
 
 StreetList::~StreetList()

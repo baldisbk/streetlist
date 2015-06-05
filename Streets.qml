@@ -4,7 +4,7 @@ import Streets 1.0
 Rectangle {
 	id: host
 	property StreetModel model
-	signal selected(string wname)
+	property string selected: ""
 	Table {
 		anchors.fill: parent
 		model: host.model
@@ -13,7 +13,7 @@ Rectangle {
 			TableCell {text: name; width: 300}
 			TableCell {text: number; width: 50}
 			TableCell {text: type; width: 150}
-			onSelect: host.selected(wholeName)
+			onSelect: host.selected = wholeName
 		}
 		contentWidth: 600
 	}

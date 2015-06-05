@@ -1,11 +1,17 @@
 import QtQuick 2.0
+import Streets 1.0
 
 Rectangle {
-	color: "cyan"
+	id: host
 	width: 100
-	Text {
-		text: "Houses"
-		anchors.centerIn: parent
+	property HouseModel model
+	signal selected(string wname)
+	Table {
+		anchors.fill: parent
+		model: host.model
+		delegate: TableRow {
+			TableCell {text: name; width: 100}
+		}
+		contentWidth: 100
 	}
 }
-
