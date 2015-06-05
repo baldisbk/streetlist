@@ -17,5 +17,6 @@
         <file>DBPage.qml</file>
         <file>TableCell.qml</file>
         <file>TableRow.qml</file>
+        <file>Table.qml</file>
     </qresource>
 </RCC>
