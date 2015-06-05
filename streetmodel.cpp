@@ -88,18 +88,53 @@ void StreetModel::setHost(StreetList *host)
 		return;
 
 	mHost = host;
-	reload();
+	init();
 	emit hostChanged(host);
 }
 
-void StreetModel::reload()
+void StreetModel::init()
 {
+	if (!mHost) return;
+
+	beginResetModel();
+
+	mStreets.clear();
+	mFilter.clear();
+	QStringList streets = mHost->streets();
+	foreach (QString street, streets) {
+		Street* str = mHost->street(street);
+		mStreets.append(str);
+	}
+	foreach(QString dist, mHost->districts())
+		mFilter[dist] = true;
+
+	endResetModel();
+}
+
+void StreetModel::filter(QString district, bool flag)
+{
+	mFilter[district] = flag;
+}
+
+void StreetModel::refresh()
+{
+	if (!mHost) return;
+
 	beginResetModel();
 	mStreets.clear();
-	if (mHost) {
-		QStringList streets = mHost->streets();
-		foreach (QString street, streets)
-			mStreets.append(mHost->street(street));
+
+	QStringList streets = mHost->streets();
+	foreach (QString street, streets) {
+		Street* str = mHost->street(street);
+		bool filtered = true;
+		foreach(QString district, str->districts())
+			if (mFilter.value(district, false)) {
+				filtered = false;
+				break;
+			}
+		if (!filtered)
+			mStreets.append(str);
 	}
+
 	endResetModel();
 }

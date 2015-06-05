@@ -39,7 +39,9 @@ public:
 public slots:
 	void setHost(StreetList* host);
 
-	void reload();
+	void init();
+	void filter(QString district, bool flag);
+	void refresh();
 
 signals:
 	void hostChanged(StreetList* host);
@@ -47,6 +49,7 @@ signals:
 private:
 	QList<Street*> mStreets;
 	StreetList* mHost;
+	QMap<QString, bool> mFilter;
 };
 
 #endif // STREETMODEL_H

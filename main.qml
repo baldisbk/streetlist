@@ -13,9 +13,9 @@ Window {
 	StreetDB {
 		id: database
 		onFinished: {
-			regionmodel.reload()
-			districtmodel.reload()
-			streetmodel.reload()
+			regionmodel.init()
+			districtmodel.init()
+			streetmodel.init()
 		}
 	}
 
@@ -24,8 +24,16 @@ Window {
 	StreetModel {id: streetmodel; host: database.streets}
 	HouseModel {id: housemodel; host: database.streets; street: streetlist.selected}
 
-	Connections {target: regionmodel; onSelected: districtmodel.filter(name, flag)}
-	//Connections {target: districtmodel; onSelected: streetmodel.filter(name, flag)}
+	Connections {
+		target: regionmodel
+		onSelected: districtmodel.filter(name, flag)
+		onUpdated: districtmodel.refresh()
+	}
+	Connections {
+		target: districtmodel
+		onSelected: streetmodel.filter(name, flag)
+		onUpdated: streetmodel.refresh()
+	}
 
 	MultiProgressBar {id: progressBars; mode: 0; anchors.fill: parent}
 

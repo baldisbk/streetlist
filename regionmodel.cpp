@@ -76,24 +76,29 @@ void RegionModel::setHost(StreetList *host)
 		return;
 
 	mHost = host;
-	reload();
+	init();
 	emit hostChanged(host);
 }
 
-void RegionModel::reload()
+void RegionModel::init()
 {
+	if (!mHost) return;
+
 	beginResetModel();
 	mRegions.clear();
 	mSelected.clear();
-	if (mHost) {
-		QStringList regions = mHost->regions();
-		foreach (QString region, regions) {
-			mRegions.append(mHost->region(region));
-			mSelected[region] = true;
-			emit selected(region, true);
-		}
+	QStringList regions = mHost->regions();
+	foreach (QString region, regions) {
+		mRegions.append(mHost->region(region));
+		mSelected[region] = true;
 	}
+
 	endResetModel();
+}
+
+void RegionModel::refresh()
+{
+	emit updated();
 }
 
 void RegionModel::select(int index)
@@ -106,4 +111,5 @@ void RegionModel::select(int index)
 	emit selected(region->name(), !flag);
 	QModelIndex ind = createIndex(index, 0);
 	emit dataChanged(ind, ind);
+	emit updated();
 }

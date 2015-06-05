@@ -35,13 +35,14 @@ public:
 public slots:
 	void setHost(StreetList* host);
 
-	void reload();
-
+	void init();
+	void refresh();
 	void select(int index);
 
 signals:
 	void hostChanged(StreetList* host);
 	void selected(QString name, bool flag);
+	void updated();
 
 private:
 	QList<Region*> mRegions;

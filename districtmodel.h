@@ -36,14 +36,16 @@ public:
 public slots:
 	void setHost(StreetList* host);
 
-	void reload();
-
 	void select(int index);
+
+	void init();
+	void refresh();
 	void filter(QString region, bool flag);
 
 signals:
 	void hostChanged(StreetList* host);
 	void selected(QString name, bool flag);
+	void updated();
 
 private:
 	QList<District*> mDistricts;

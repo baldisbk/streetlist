@@ -80,26 +80,32 @@ void DistrictModel::setHost(StreetList *host)
 		return;
 
 	mHost = host;
-	reload();
+	mFilter.clear();
+	mSelected.clear();
+	foreach(QString reg, mHost->regions())
+		mFilter.append(reg);
+	init();
 	emit hostChanged(host);
 }
 
-void DistrictModel::reload()
+void DistrictModel::init()
 {
+	if (!mHost) return;
+
 	beginResetModel();
 	mDistricts.clear();
 	mSelected.clear();
-	if (mHost) {
-		QStringList districts = mHost->districts();
-		foreach (QString district, districts) {
-			District* dist = mHost->district(district);
-			if (mFilter.isEmpty() || mFilter.contains(dist->region()->name())) {
-				mDistricts.append(dist);
-				mSelected[district] = true;
-				emit selected(district, true);
-			}
-		}
+	mFilter.clear();
+
+	QStringList districts = mHost->districts();
+	foreach (QString district, districts) {
+		District* dist = mHost->district(district);
+		mDistricts.append(dist);
+		mSelected[district] = true;
 	}
+	foreach (QString region, mHost->regions())
+		mFilter.append(region);
+
 	endResetModel();
 }
 
@@ -113,6 +119,7 @@ void DistrictModel::select(int index)
 	emit selected(district->name(), !flag);
 	QModelIndex ind = createIndex(index, 0);
 	emit dataChanged(ind, ind);
+	emit updated();
 }
 
 void DistrictModel::filter(QString region, bool flag)
@@ -124,5 +131,31 @@ void DistrictModel::filter(QString region, bool flag)
 		if (mFilter.contains(region))
 			mFilter.removeAll(region);
 	}
-	reload();
+}
+
+void DistrictModel::refresh()
+{
+	if (!mHost) return;
+
+	beginResetModel();
+
+	QStringList districts = mHost->districts();
+	foreach (QString district, districts) {
+		District* dist = mHost->district(district);
+		bool old = mDistricts.contains(dist);
+		if (mFilter.contains(dist->region()->name())) {
+			if (!old) {
+				mDistricts.append(dist);
+				mSelected[district] = true;
+			}
+		} else {
+			mSelected[district] = false;
+			if (old)
+				mDistricts.removeAll(dist);
+		}
+		emit selected(district, mSelected[district]);
+	}
+
+	endResetModel();
+	emit updated();
 }
