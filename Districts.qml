@@ -7,6 +7,7 @@ Rectangle {
 	Table {
 		anchors.fill: parent
 		model: host.model
+		hasSelection: false
 		delegate: TableRow {
 			TableCell {text: region; width: 100}
 			TableCell {text: name; width: 300}
