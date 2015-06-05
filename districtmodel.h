@@ -16,7 +16,8 @@ public:
 
 	enum Roles {
 		NameRole = Qt::UserRole + 1,
-		RegionRole
+		RegionRole,
+		SelectedRole
 	};
 
 	// QAbstractItemModel interface
@@ -37,11 +38,17 @@ public slots:
 
 	void reload();
 
+	void select(int index);
+	void filter(QString region, bool flag);
+
 signals:
 	void hostChanged(StreetList* host);
+	void selected(QString name, bool flag);
 
 private:
 	QList<District*> mDistricts;
+	QMap<QString, bool> mSelected;
+	QStringList mFilter;
 	StreetList* mHost;
 };
 

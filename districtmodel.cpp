@@ -53,6 +53,8 @@ QVariant DistrictModel::data(const QModelIndex &index, int role) const
 		return district->name();
 	case RegionRole:
 		return district->region()->name();
+	case SelectedRole:
+		return mSelected.value(district->name(), false);
 	default:;
 	}
 	return QVariant();
@@ -63,6 +65,7 @@ QHash<int, QByteArray> DistrictModel::roleNames() const
 	QHash<int, QByteArray> res;
 	res[NameRole] = "name";
 	res[RegionRole] = "region";
+	res[SelectedRole] = "selected";
 	return res;
 }
 
@@ -85,10 +88,41 @@ void DistrictModel::reload()
 {
 	beginResetModel();
 	mDistricts.clear();
+	mSelected.clear();
 	if (mHost) {
 		QStringList districts = mHost->districts();
-		foreach (QString district, districts)
-			mDistricts.append(mHost->district(district));
+		foreach (QString district, districts) {
+			District* dist = mHost->district(district);
+			if (mFilter.isEmpty() || mFilter.contains(dist->region()->name())) {
+				mDistricts.append(dist);
+				mSelected[district] = true;
+				emit selected(district, true);
+			}
+		}
 	}
 	endResetModel();
+}
+
+void DistrictModel::select(int index)
+{
+	if (index < 0 || index >= mDistricts.size())
+		return;
+	District* district = mDistricts.at(index);
+	bool flag = mSelected.value(district->name(), false);
+	mSelected[district->name()] = !flag;
+	emit selected(district->name(), !flag);
+	QModelIndex ind = createIndex(index, 0);
+	emit dataChanged(ind, ind);
+}
+
+void DistrictModel::filter(QString region, bool flag)
+{
+	if (flag) {
+		if (!mFilter.contains(region))
+			mFilter.append(region);
+	} else {
+		if (mFilter.contains(region))
+			mFilter.removeAll(region);
+	}
+	reload();
 }

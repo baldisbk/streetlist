@@ -12,16 +12,22 @@ Window {
 
 	StreetDB {
 		id: database
-		onFinished: streetmodel.reload()
+		onFinished: {
+			regionmodel.reload()
+			districtmodel.reload()
+			streetmodel.reload()
+		}
 	}
+
+	RegionModel {id: regionmodel; host: database.streets}
+	DistrictModel {id: districtmodel; host: database.streets}
 	StreetModel {id: streetmodel; host: database.streets}
 	HouseModel {id: housemodel; host: database.streets; street: streetlist.selected}
 
-	MultiProgressBar {
-		id: progressBars
-		mode: 0
-		anchors.fill: parent
-	}
+	Connections {target: regionmodel; onSelected: districtmodel.filter(name, flag)}
+	//Connections {target: districtmodel; onSelected: streetmodel.filter(name, flag)}
+
+	MultiProgressBar {id: progressBars; mode: 0; anchors.fill: parent}
 
 	Connections {
 		target: database
@@ -160,7 +166,7 @@ Window {
 		central: board
 		Mainmenu {id: menu}
 		Submenu {id: submenu}
-		Filter {id: filters}
+		Filter {id: filters; rmodel: regionmodel; dmodel: districtmodel}
 		AutoLayout {
 			id: board
 			orientation: Qt.Vertical
@@ -169,7 +175,7 @@ Window {
 				orientation: Qt.Horizontal
 				central: streetlist
 				Streets {id: streetlist; model: streetmodel}
-				Rectangle {width: 10; border.width: 1}
+				Rectangle {width: 10}
 				Houses {id: houselist; model: housemodel}
 			}
 			DBPage {id: dbpage; db: database}

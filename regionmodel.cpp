@@ -49,7 +49,9 @@ QVariant RegionModel::data(const QModelIndex &index, int role) const
 	switch(role) {
 	case Qt::DisplayRole:
 	case NameRole:
-		return region->name();
+		return region->name();	
+	case SelectedRole:
+		return mSelected.value(region->name(), false);
 	default:;
 	}
 	return QVariant();
@@ -59,6 +61,7 @@ QHash<int, QByteArray> RegionModel::roleNames() const
 {
 	QHash<int, QByteArray> res;
 	res[NameRole] = "name";
+	res[SelectedRole] = "selected";
 	return res;
 }
 
@@ -81,10 +84,26 @@ void RegionModel::reload()
 {
 	beginResetModel();
 	mRegions.clear();
+	mSelected.clear();
 	if (mHost) {
 		QStringList regions = mHost->regions();
-		foreach (QString region, regions)
+		foreach (QString region, regions) {
 			mRegions.append(mHost->region(region));
+			mSelected[region] = true;
+			emit selected(region, true);
+		}
 	}
 	endResetModel();
+}
+
+void RegionModel::select(int index)
+{
+	if (index < 0 || index >= mRegions.size())
+		return;
+	Region* region = mRegions.at(index);
+	bool flag = mSelected.value(region->name(), false);
+	mSelected[region->name()] = !flag;
+	emit selected(region->name(), !flag);
+	QModelIndex ind = createIndex(index, 0);
+	emit dataChanged(ind, ind);
 }

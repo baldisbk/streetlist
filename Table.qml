@@ -14,7 +14,13 @@ Flickable {
 			id: highlightBar
 			Rectangle {
 				width: list.width; height: 20
-				color: "#FFFF88"
+				gradient: Gradient {
+					GradientStop { position: 0.0; color: "#FFFF88" }
+//					GradientStop { position: 0.33; color: "#00000000" }
+					GradientStop { position: 0.5; color: "#00000000" }
+//					GradientStop { position: 0.66; color: "#00000000" }
+					GradientStop { position: 1.0; color: "#FFFF88" }
+				}
 			}
 		}
 		highlightMoveDuration: 0
