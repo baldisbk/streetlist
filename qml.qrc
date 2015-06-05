@@ -20,5 +20,6 @@
         <file>Table.qml</file>
         <file>Regions.qml</file>
         <file>Districts.qml</file>
+        <file>Separator.qml</file>
     </qresource>
 </RCC>

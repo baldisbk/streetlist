@@ -76,7 +76,6 @@ Window {
 				}
 				PropertyChanges {target: submenu; visible: false}
 				PropertyChanges {target: filters; visible: true}
-				PropertyChanges {target: dbpage; visible: false}
 			},
 			State {
 				name: "search"
@@ -91,7 +90,6 @@ Window {
 				}
 				PropertyChanges {target: submenu; visible: true}
 				PropertyChanges {target: filters; visible: false}
-				PropertyChanges {target: dbpage; visible: false}
 			},
 			State {
 				name: "map"
@@ -107,7 +105,6 @@ Window {
 				}
 				PropertyChanges {target: submenu; visible: false}
 				PropertyChanges {target: filters; visible: false}
-				PropertyChanges {target: dbpage; visible: false}
 			},
 			State {
 				name: "description"
@@ -123,7 +120,6 @@ Window {
 				}
 				PropertyChanges {target: submenu; visible: false}
 				PropertyChanges {target: filters; visible: false}
-				PropertyChanges {target: dbpage; visible: false}
 			},
 			State {
 				name: "edit"
@@ -165,8 +161,10 @@ Window {
 		orientation: Qt.Vertical
 		central: board
 		Mainmenu {id: menu}
+		Separator {}
 		Submenu {id: submenu}
 		Filter {id: filters; rmodel: regionmodel; dmodel: districtmodel}
+		Separator {visible: submenu.visible || filters.visible}
 		AutoLayout {
 			id: board
 			orientation: Qt.Vertical
@@ -175,9 +173,10 @@ Window {
 				orientation: Qt.Horizontal
 				central: streetlist
 				Streets {id: streetlist; model: streetmodel}
-				Rectangle {width: 10}
+				Separator {}
 				Houses {id: houselist; model: housemodel}
 			}
+			Separator {visible: lists.visible}
 			DBPage {id: dbpage; db: database}
 			Desc {id: description}
 			Maps {id: streetmap}

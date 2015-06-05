@@ -9,7 +9,7 @@ Rectangle {
 		orientation: Qt.Horizontal
 		central: districts
 		Regions {id: regions; width: 100}
-		Rectangle {width: 10; height: 10; color: "#dfdfdf"}
+		Separator {}
 		Districts {id: districts; width: 300}
 	}
 }
