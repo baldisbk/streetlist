@@ -7,7 +7,7 @@
         <file>MultiProgressBar.qml</file>
         <file>Mainmenu.qml</file>
         <file>Filter.qml</file>
-        <file>Table.qml</file>
+        <file>Streets.qml</file>
         <file>Desc.qml</file>
         <file>Submenu.qml</file>
         <file>Maps.qml</file>
@@ -16,5 +16,6 @@
         <file>Splitter.qml</file>
         <file>DBPage.qml</file>
         <file>TableCell.qml</file>
+        <file>TableRow.qml</file>
     </qresource>
 </RCC>

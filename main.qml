@@ -167,7 +167,7 @@ Window {
 				id: lists
 				orientation: Qt.Horizontal
 				central: streetlist
-				Table {
+				Streets {
 					id: streetlist
 					model: streetmodel
 				}
