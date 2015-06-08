@@ -10,5 +10,6 @@
         <file>pics/Search-32.png</file>
         <file>pics/View Details-32.png</file>
         <file>pics/Waypoint Map-32.png</file>
+        <file>pics/Tag-32.png</file>
     </qresource>
 </RCC>
