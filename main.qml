@@ -208,6 +208,6 @@ Window {
 
 	Component.onCompleted: {
 		database.init()
-		database.fromfiles(dbpage.filePath)
+		database.fromdb()
 	}
 }
