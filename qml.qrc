@@ -21,5 +21,6 @@
         <file>Regions.qml</file>
         <file>Districts.qml</file>
         <file>Separator.qml</file>
+        <file>LineEdit.qml</file>
     </qresource>
 </RCC>
