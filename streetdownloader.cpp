@@ -323,7 +323,9 @@ void StreetList::loadFiles(QString dirName)
 		QString name = dirName + '/' + req->url.section("/", section, section) + ".html";
 		QFile file(name);
 		if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-			qDebug() << name << "not found";
+			emit loadError(QString("Error opening %1: %2").
+				arg(name).
+				arg(file.errorString()));
 			mRequests.remove(req->url);
 			delete req;
 			continue;

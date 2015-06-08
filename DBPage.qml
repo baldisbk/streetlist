@@ -1,8 +1,15 @@
 import QtQuick 2.0
+import QtQuick.Dialogs 1.0
 
 Item {
 	property StreetDB db
 	property alias filePath: fileEdit.text
+	FileDialog {
+		id: fileopen
+		selectFolder: true
+		onAccepted: filePath = fileUrl
+	}
+
 	AutoLayout {
 		anchors.fill: parent
 		orientation: Qt.Vertical
@@ -46,7 +53,7 @@ Item {
 			Button {
 				text: "..."
 				width: 50
-				onClicked: ;
+				onClicked: fileopen.open()
 			}
 		}
 		Item {id: filler}
