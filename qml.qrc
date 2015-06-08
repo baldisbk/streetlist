@@ -21,5 +21,6 @@
         <file>Regions.qml</file>
         <file>Districts.qml</file>
         <file>Separator.qml</file>
+        <file>MessageBox.qml</file>
     </qresource>
 </RCC>

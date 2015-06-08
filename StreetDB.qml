@@ -13,11 +13,13 @@ QtObject {
 
 	signal finished
 	signal progress(int type, int val, int max)
+	signal error(string text)
 
 	property Connections strConn: Connections {
 		target: streets
 		onProgress: progress(type, val, max)
 		onFinished: finished()
+		onLoadError: {console.log(errorText); error(errorText)}
 	}
 
 	function init() {

@@ -156,7 +156,11 @@ void StreetList::onReplyArrived(QNetworkReply *reply)
 
 void StreetList::onReplyError(QNetworkReply::NetworkError code)
 {
-	qDebug() << "error" << code;
+	const QNetworkReply* reply = dynamic_cast<const QNetworkReply*>(sender());
+	if (reply)
+		emit loadError(reply->errorString());
+	else
+		emit loadError("error " + QString::number(code));
 }
 
 QList<StreetList::Request *> StreetList::parseRequest(QIODevice *input, StreetList::Request *parent)
