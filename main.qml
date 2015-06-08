@@ -36,6 +36,7 @@ Window {
 	}
 
 	MultiProgressBar {id: progressBars; mode: 0; anchors.fill: parent}
+	MessageBox {id: messagebox; anchors.fill: parent}
 
 	Connections {
 		target: database
@@ -66,6 +67,7 @@ Window {
 		}
 		onFinished: progressBars.mode = 0
 		onProgress: progressBars.progress(type, val, max)
+		onError: messagebox.display(text)
 	}
 
 	Item {
