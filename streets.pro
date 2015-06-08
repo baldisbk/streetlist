@@ -2,6 +2,8 @@ TEMPLATE = app
 
 QT += qml quick location network
 
+TARGET = MoscowStreetList
+
 SOURCES += main.cpp \
     streetdownloader.cpp \
     streetmodel.cpp \
@@ -30,3 +32,10 @@ HEADERS += \
     districtmodel.h \
     regionmodel.h \
     housemodel.h
+
+DISTFILES += \
+    android/AndroidManifest.xml \
+    android/res/values/libs.xml \
+    android/build.gradle
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
