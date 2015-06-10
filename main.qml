@@ -194,6 +194,18 @@ Window {
 		}
 	}
 
+	Connections {
+		target: submenu
+		onSearch: {
+			if (submenu.state == "brute")
+				streetmodel.bruteforce(str, streetlist.current)
+		}
+	}
+	Connections {
+		target: streetmodel
+		onSelected: streetlist.current = index
+	}
+
 	Component.onCompleted: {
 		database.init()
 		database.fromfiles(dbpage.filePath)

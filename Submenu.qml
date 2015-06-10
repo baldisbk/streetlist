@@ -2,6 +2,7 @@ import QtQuick 2.0
 
 StyleItem {
 	id: host
+	signal search(string str)
 	height: buttonSize
 	state: "brute"
 	states: [
@@ -37,6 +38,7 @@ StyleItem {
 			id: bfRun
 			visible: false
 			text: "Go!"
+			onClicked: search(bfEditor.text)
 		}
 		Button {
 			id: tags

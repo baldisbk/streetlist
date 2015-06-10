@@ -43,8 +43,11 @@ public slots:
 	void filter(QString district, bool flag);
 	void refresh();
 
+	void bruteforce(const QString& exp, int indexFrom);
+
 signals:
 	void hostChanged(StreetList* host);
+	void selected(int index);
 
 private:
 	QList<Street*> mStreets;

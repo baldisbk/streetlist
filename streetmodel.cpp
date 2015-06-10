@@ -138,3 +138,24 @@ void StreetModel::refresh()
 
 	endResetModel();
 }
+
+void StreetModel::bruteforce(const QString &exp, int indexFrom)
+{
+	qDebug() << "bruteforce" << exp;
+	int index = indexFrom;
+	int found = -1;
+	while (true) {
+		if (index != indexFrom) {
+			found = index;
+			break;
+		}
+		// hack here
+		++index;
+		if (index == mStreets.size())
+			index = 0;
+		if (index == indexFrom)
+			break;
+	}
+	if (found != -1)
+		emit selected(found);
+}

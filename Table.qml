@@ -5,6 +5,7 @@ Flickable {
 	property alias model: list.model
 	property alias delegate: list.delegate
 	property bool hasSelection: true
+	property alias current: list.currentIndex
 	contentHeight: height
 	clip: true
 	ListView {
