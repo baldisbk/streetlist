@@ -7,7 +7,13 @@ StyleItem {
 	FileDialog {
 		id: fileopen
 		selectFolder: true
-		onAccepted: filePath = fileUrl
+		onAccepted: {
+			var ind = fileUrl.toString().indexOf("://", 0)
+			if (ind != -1)
+				filePath = fileUrl.toString().slice(ind+3)
+			else
+				filePath = fileUrl.toString()
+		}
 	}
 
 	AutoLayout {
