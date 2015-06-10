@@ -10,7 +10,7 @@ StyleItem {
 	}
 	ListView {
 		id: progressBars
-		property int valHeight: textlineSize
+		property int valHeight: textlineHeight
 		height: progressModel.count * valHeight
 		width: parent.width - fullscreenBorder
 		anchors.centerIn: parent

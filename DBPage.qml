@@ -24,7 +24,7 @@ StyleItem {
 			height: buttonSize
 			Button {
 				text: "Save to DB"
-				width: buttonTextSize
+				width: buttonTextWidth
 				onClicked: db.todb();
 			}
 			Item {id: filler1}
@@ -35,7 +35,7 @@ StyleItem {
 			height: buttonSize
 			Button {
 				text: "Load from DB"
-				width: buttonTextSize
+				width: buttonTextWidth
 				onClicked: db.fromdb();
 			}
 			Item {id: filler2}
@@ -46,7 +46,7 @@ StyleItem {
 			height: buttonSize
 			Button {
 				text: "Load from WWW"
-				width: buttonTextSize
+				width: buttonTextWidth
 				onClicked: db.fromweb();
 			}
 			Item {id: filler3}
@@ -58,7 +58,7 @@ StyleItem {
 			central: fileEdit
 			Button {
 				text: "Load from files"
-				width: buttonTextSize
+				width: buttonTextWidth
 				onClicked: db.fromfiles(filePath);
 			}
 			LineEdit {id: fileEdit; text: "/home/baldis/Documents/maps/maps/tmp/"}

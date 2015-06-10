@@ -10,7 +10,7 @@ StyleItem {
 		anchors.fill: parent
 	}
 	Rectangle {
-		height: btn.height + fontSize * 10
+		height: btn.height + textlineHeight * 5
 		width: parent.width - fullscreenBorder
 		anchors.centerIn: parent
 		AutoLayout {

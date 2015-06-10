@@ -1,7 +1,7 @@
 import QtQuick 2.0
 
 StyleItem {
-	height: textlineSize
+	height: textlineHeight
 	default property alias contents: row.data
 	signal select()
 	property bool selected: false

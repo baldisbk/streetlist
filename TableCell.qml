@@ -2,7 +2,7 @@ import QtQuick 2.0
 
 StyleItem {
 	property alias text: txt.text
-	height: textlineSize
+	height: textlineHeight
 	Rectangle {
 		id: host
 		color: transparentColor
@@ -11,7 +11,7 @@ StyleItem {
 		Text {
 			id: txt
 			anchors.fill: parent
-			anchors.leftMargin: fontSize / 2
+			anchors.leftMargin: fontWidth / 2
 			horizontalAlignment: Text.AlignLeft
 			verticalAlignment: Text.AlignVCenter
 		}

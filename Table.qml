@@ -16,7 +16,7 @@ Flickable {
 			id: highlightBar
 			StyleItem {
 				width: list.width
-				height: textlineSize
+				height: textlineHeight
 				visible: view.hasSelection
 				Rectangle {
 					anchors.fill: parent

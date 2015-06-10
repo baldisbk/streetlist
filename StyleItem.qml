@@ -9,10 +9,10 @@ Item {
 			Screen.desktopAvailableHeight
 
 	// sizes
-	property int fontSize: fm.height / 1.5
+	property int fontWidth: fm.averageCharacterWidth * 1.5
 	property int buttonSize: sSize / 10
-	property int buttonTextSize: sSize / 2.5
-	property int textlineSize: fm.height * 2
+	property int buttonTextWidth: sSize / 2.5
+	property int textlineHeight: fm.height * 2
 	property int separatorSize: sSize / 50
 	property int buttonRadius: sSize / 50
 	property int buttonBorder: 1
@@ -20,7 +20,7 @@ Item {
 	property int editorBorder: 1
 	property int buttonShift: sSize / 50
 	property int fullscreenBorder: sSize / 20
-	property int subtableSize: textlineSize * 5
+	property int subtableSize: textlineHeight * 5
 
 	// animation
 	property int buttonAnimation: 100

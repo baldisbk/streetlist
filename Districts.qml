@@ -10,11 +10,11 @@ StyleItem {
 		anchors.fill: parent
 		hasSelection: false
 		delegate: TableRow {
-			TableCell {text: region; width: fontSize * 10}
-			TableCell {text: name; width: fontSize * 25}
+			TableCell {text: region; width: fontWidth * 10}
+			TableCell {text: name; width: fontWidth * 25}
 			selected: model.selected
 			onSelect: table.model.select(index)
 		}
-		contentWidth: fontSize * 35
+		contentWidth: fontWidth * 35
 	}
 }

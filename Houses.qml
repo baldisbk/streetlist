@@ -5,11 +5,11 @@ StyleItem {
 	id: host
 	property alias maxWidth: table.contentWidth
 	property alias model: table.model
-	width: maxWidth
+	width: fontWidth * 5
 	Table {
 		id: table
 		anchors.fill: parent
-		delegate: TableRow {TableCell {text: name; width: fontSize * 10}}
-		contentWidth: fontSize * 10
+		delegate: TableRow {TableCell {text: name; width: fontWidth * 10}}
+		contentWidth: fontWidth * 10
 	}
 }

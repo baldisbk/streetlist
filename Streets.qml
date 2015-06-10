@@ -10,13 +10,13 @@ StyleItem {
 		id: table
 		anchors.fill: parent
 		delegate: TableRow {
-			TableCell {text: secondary; width: fontSize*10}
-			TableCell {text: name; width: fontSize*40}
-			TableCell {text: number; width: fontSize*5}
-			TableCell {text: type; width: fontSize*10}
+			TableCell {text: secondary; width: fontWidth*10}
+			TableCell {text: name; width: fontWidth*40}
+			TableCell {text: number; width: fontWidth*5}
+			TableCell {text: type; width: fontWidth*10}
 			onSelect: host.selected = wholeName
 		}
-		contentWidth: fontSize*65
+		contentWidth: fontWidth*65
 	}
 }
 

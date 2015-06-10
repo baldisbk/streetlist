@@ -10,10 +10,10 @@ StyleItem {
 		anchors.fill: parent
 		hasSelection: false
 		delegate: TableRow {
-			TableCell {text: name; width: fontSize * 10}
+			TableCell {text: name; width: fontWidth * 10}
 			selected: model.selected
 			onSelect: table.model.select(index)
 		}
-		contentWidth: fontSize * 10
+		contentWidth: fontWidth * 10
 	}
 }
