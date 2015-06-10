@@ -1,24 +1,23 @@
 import QtQuick 2.0
 
-Item {
+StyleItem {
 	id: host
 	property int percent: 0
 	property string caption
 	property string comment
-	property alias fillColor: filled.color
-	property alias emptyColor: empty.color
-	Component.onCompleted: {fillColor = "blue"; emptyColor = "white"}
 	Rectangle {
 		id: empty
+		color: emptyColor
 		anchors {
 			top: parent.top
 			right: parent.right
 			bottom: parent.bottom
-			left: filled.right
+			left: prog.right
 		}
 	}
 	Rectangle {
-		id: filled
+		id: prog
+		color: progressColor
 		anchors {
 			top: parent.top
 			left: parent.left
@@ -32,6 +31,6 @@ Item {
 		verticalAlignment:  Text.AlignVCenter
 		text: (comment.length == 0) ?
 			      (caption + ": " + percent + "%"):
-			      (caption + "(" + comment + "): " + percent + "%")
+			      (caption + " (" + comment + "): " + percent + "%")
 	}
 }

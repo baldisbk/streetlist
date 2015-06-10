@@ -1,17 +1,17 @@
 import QtQuick 2.0
 
-Item {
+StyleItem {
 	property int mode
 	z: 100
 	Rectangle {
-		color: "#bf000000"
+		color: backgroundColor
 		anchors.fill: parent
 	}
 	ListView {
 		id: progressBars
-		property int valHeight: 20
+		property int valHeight: textlineSize
 		height: progressModel.count * valHeight
-		width: parent.width - 20
+		width: parent.width - fullscreenBorder
 		anchors.centerIn: parent
 		model: ListModel {id: progressModel}
 		delegate: Component {

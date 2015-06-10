@@ -1,14 +1,15 @@
 import QtQuick 2.0
 import Streets 1.0
 
-Item {
+StyleItem {
 	id: host
-	width: 100
+	property alias maxWidth: table.contentWidth
 	property alias model: table.model
+	width: maxWidth
 	Table {
 		id: table
 		anchors.fill: parent
-		delegate: TableRow {TableCell {text: name; width: 100}}
-		contentWidth: 100
+		delegate: TableRow {TableCell {text: name; width: fontSize * 10}}
+		contentWidth: fontSize * 10
 	}
 }

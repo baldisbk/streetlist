@@ -1,21 +1,22 @@
 import QtQuick 2.0
 import Streets 1.0
 
-Item {
+StyleItem {
 	id: host
 	property alias model: table.model
+	property alias maxWidth: table.contentWidth
 	property string selected: ""
 	Table {
 		id: table
 		anchors.fill: parent
 		delegate: TableRow {
-			TableCell {text: secondary; width: 100}
-			TableCell {text: name; width: 300}
-			TableCell {text: number; width: 50}
-			TableCell {text: type; width: 150}
+			TableCell {text: secondary; width: fontSize*10}
+			TableCell {text: name; width: fontSize*40}
+			TableCell {text: number; width: fontSize*5}
+			TableCell {text: type; width: fontSize*10}
 			onSelect: host.selected = wholeName
 		}
-		contentWidth: 600
+		contentWidth: fontSize*65
 	}
 }
 

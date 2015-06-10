@@ -2,7 +2,8 @@ import QtQuick 2.0
 
 Rectangle {
 	id: host
-	border.width: 1
+	border.width: editorBorder
+	height: textlineSize
 	property alias text: input.text
 	Flickable {
 		id: flick

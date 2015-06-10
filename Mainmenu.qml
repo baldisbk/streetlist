@@ -1,8 +1,8 @@
 import QtQuick 2.0
 
-Item {
+StyleItem {
 	id: host
-	height: 50
+	height: buttonSize
 	state: "search"
 	states: [
 		State {
@@ -65,8 +65,6 @@ Item {
 			id: db
 			image: "qrc:/pics/Database-32.png"
 			text: " "
-			width: 50
-			height: 50
 			checkable: !checked
 			onCheckedChanged: if (checked) host.state = "database"
 		}
@@ -74,8 +72,6 @@ Item {
 			id: filter
 			image: "qrc:/pics/Filter-32.png"
 			text: " "
-			width: 50
-			height: 50
 			checkable: !checked
 			onCheckedChanged: if (checked) host.state = "filter"
 		}
@@ -83,8 +79,6 @@ Item {
 			id: search
 			image: "qrc:/pics/Search-32.png"
 			text: " "
-			width: 50
-			height: 50
 			checkable: !checked
 			onCheckedChanged: if (checked) host.state = "search"
 		}
@@ -92,8 +86,6 @@ Item {
 			id: description
 			image: "qrc:/pics/List-32.png"
 			text: " "
-			width: 50
-			height: 50
 			checkable: !checked
 			onCheckedChanged: if (checked) host.state = "description"
 		}
@@ -101,8 +93,6 @@ Item {
 			id: map
 			image: "qrc:/pics/Map-32.png"
 			text: " "
-			width: 50
-			height: 50
 			checkable: !checked
 			onCheckedChanged: if (checked) host.state = "map"
 		}
@@ -110,8 +100,6 @@ Item {
 			id: edit
 			image: "qrc:/pics/Edit-32.png"
 			text: " "
-			width: 50
-			height: 50
 			checkable: !checked
 			onCheckedChanged: if (checked) host.state = "edit"
 		}

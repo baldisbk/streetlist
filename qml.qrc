@@ -23,5 +23,6 @@
         <file>Separator.qml</file>
         <file>LineEdit.qml</file>
         <file>MessageBox.qml</file>
+        <file>StyleItem.qml</file>
     </qresource>
 </RCC>

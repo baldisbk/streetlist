@@ -7,10 +7,10 @@ import Streets 1.0
 Window {
 	id: mainwin
 	visible: true
-	height: 600
-	width: 500
+	height: sizer.sSize
+	width: sizer.sSize
 
-	Item {id: sizer; visible: false}
+	StyleItem {id: sizer; visible: false}
 	StreetDB {
 		id: database
 		onFinished: {
@@ -71,7 +71,7 @@ Window {
 		onError: messagebox.display(text)
 	}
 
-	Item {
+	StyleItem {
 		id: stateHolder
 		states: [
 			State {
@@ -111,7 +111,7 @@ Window {
 						board.central = streetmap
 						description.visible = false
 						dbpage.visible = false
-						lists.height = 150
+						lists.height = sizer.subtableSize
 					}
 				}
 				PropertyChanges {target: submenu; visible: false}
@@ -126,7 +126,7 @@ Window {
 						board.central = description
 						streetmap.visible = false
 						dbpage.visible = false
-						lists.height = 150
+						lists.height = sizer.subtableSize
 					}
 				}
 				PropertyChanges {target: submenu; visible: false}
@@ -141,7 +141,7 @@ Window {
 						board.central = description
 						streetmap.visible = false
 						dbpage.visible = false
-						lists.height = 150
+						lists.height = sizer.subtableSize
 					}
 				}
 				PropertyChanges {target: submenu; visible: false}

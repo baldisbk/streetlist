@@ -1,16 +1,17 @@
 import QtQuick 2.0
 
-Item {
+StyleItem {
 	property alias text: txt.text
-	height: 20
+	height: textlineSize
 	Rectangle {
 		id: host
-		color: "#00000000"
-		border.width: 1
+		color: transparentColor
+		border.width: cellBorder
 		anchors.fill: parent
 		Text {
 			id: txt
 			anchors.fill: parent
+			anchors.leftMargin: fontSize / 2
 			horizontalAlignment: Text.AlignLeft
 			verticalAlignment: Text.AlignVCenter
 		}

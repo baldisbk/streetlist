@@ -1,16 +1,16 @@
 import QtQuick 2.0
 
-Item {
-	height: 100
+StyleItem {
+	height: subtableSize
 	property alias dmodel: districts.model
 	property alias rmodel: regions.model
 	AutoLayout {
 		anchors.fill: parent
 		orientation: Qt.Horizontal
 		central: districts
-		Regions {id: regions; width: 100}
+		Regions {id: regions; width: maxWidth}
 		Separator {}
-		Districts {id: districts; width: 300}
+		Districts {id: districts}
 	}
 }
 

@@ -1,6 +1,6 @@
 import QtQuick 2.0
 
-Item {
+StyleItem {
 	property int orientation
 	property Item central
 	function init() {

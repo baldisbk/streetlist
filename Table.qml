@@ -14,16 +14,16 @@ Flickable {
 		height: view.height
 		highlight: Component {
 			id: highlightBar
-			Item {
+			StyleItem {
 				width: list.width
-				height: 20
+				height: textlineSize
 				visible: view.hasSelection
 				Rectangle {
 					anchors.fill: parent
 					gradient: Gradient {
-						GradientStop { position: 0.0; color: "#FFFF88" }
-						GradientStop { position: 0.5; color: "#00000000" }
-						GradientStop { position: 1.0; color: "#FFFF88" }
+						GradientStop { position: 0.0; color: selectedColor }
+						GradientStop { position: 0.5; color: transparentColor }
+						GradientStop { position: 1.0; color: selectedColor }
 					}
 				}
 			}

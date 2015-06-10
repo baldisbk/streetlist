@@ -1,7 +1,7 @@
 import QtQuick 2.0
 
-Item {
-	height: 20
+StyleItem {
+	height: textlineSize
 	default property alias contents: row.data
 	signal select()
 	property bool selected: false
@@ -12,7 +12,7 @@ Item {
 	}
 	Rectangle {
 		anchors.fill: parent
-		color: selected?"#FFFF88":"#00000000"
+		color: selected?selectedColor:transparentColor
 	}
 	Row {id: row}
 	Component.onCompleted: {

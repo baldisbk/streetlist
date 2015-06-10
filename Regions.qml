@@ -1,18 +1,19 @@
 import QtQuick 2.0
 import Streets 1.0
 
-Item {
+StyleItem {
 	id: host
 	property alias model: table.model
+	property alias maxWidth: table.contentWidth
 	Table {
 		id: table
 		anchors.fill: parent
 		hasSelection: false
 		delegate: TableRow {
-			TableCell {text: name; width: 100}
+			TableCell {text: name; width: fontSize * 10}
 			selected: model.selected
 			onSelect: table.model.select(index)
 		}
-		contentWidth: 100
+		contentWidth: fontSize * 10
 	}
 }

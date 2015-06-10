@@ -1,4 +1,11 @@
 import QtQuick 2.0
 
-Item {width: 10; height: 10; Rectangle {color: "#dfdfdf"; anchors.fill: parent}}
+StyleItem {
+	width: separatorSize
+	height: separatorSize
+	Rectangle {
+		color: separatorColor
+		anchors.fill: parent
+	}
+}
 
