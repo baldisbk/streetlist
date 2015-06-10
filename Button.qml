@@ -1,15 +1,15 @@
 import QtQuick 2.0
 
-Rectangle {
+Item {
 	id: host
 	property string text
 	property string image
-	property int itemSize
 	property int maxShift: 10
 	property bool checked: false
 	property bool checkable: false
 	signal clicked()
-	height: itemSize
+Rectangle {
+	anchors.fill: parent
 	color: "#00000000"
 
 	Rectangle {
@@ -23,7 +23,7 @@ Rectangle {
 	}
 	AutoLayout {
 		id: alo
-		anchors.fill: host
+		anchors.fill: parent
 		property bool noText: host.text.length == 0
 		property bool noPic: host.image.length == 0
 		orientation: Qt.Horizontal
@@ -51,7 +51,7 @@ Rectangle {
 	}
 	MouseArea {
 		id: mouseArea
-		anchors.fill: host
+		anchors.fill: parent
 		onClicked: {
 			if (host.checkable)
 				host.checked = !host.checked
@@ -71,4 +71,5 @@ Rectangle {
 			ColorAnimation { duration: 100 }
 		}
 	}
+}
 }

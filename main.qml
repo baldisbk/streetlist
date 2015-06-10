@@ -10,6 +10,7 @@ Window {
 	height: 600
 	width: 500
 
+	Item {id: sizer; visible: false}
 	StreetDB {
 		id: database
 		onFinished: {

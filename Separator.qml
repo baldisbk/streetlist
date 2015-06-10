@@ -1,4 +1,4 @@
 import QtQuick 2.0
 
-Rectangle {width: 10; height: 10; color: "#dfdfdf"}
+Item {width: 10; height: 10; Rectangle {color: "#dfdfdf"; anchors.fill: parent}}
 

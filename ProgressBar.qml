@@ -1,19 +1,29 @@
 import QtQuick 2.0
 
-Rectangle {
+Item {
 	id: host
 	property int percent: 0
 	property string caption
 	property string comment
-	property color fillColor: "blue"
-	color: "white"
+	property alias fillColor: filled.color
+	property alias emptyColor: empty.color
+	Component.onCompleted: {fillColor = "blue"; emptyColor = "white"}
 	Rectangle {
+		id: empty
+		anchors {
+			top: parent.top
+			right: parent.right
+			bottom: parent.bottom
+			left: filled.right
+		}
+	}
+	Rectangle {
+		id: filled
 		anchors {
 			top: parent.top
 			left: parent.left
 			bottom: parent.bottom
 		}
-		color: fillColor
 		width: parent.width / 100 * percent
 	}
 	Text {

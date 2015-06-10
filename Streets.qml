@@ -1,13 +1,13 @@
 import QtQuick 2.0
 import Streets 1.0
 
-Rectangle {
+Item {
 	id: host
-	property StreetModel model
+	property alias model: table.model
 	property string selected: ""
 	Table {
+		id: table
 		anchors.fill: parent
-		model: host.model
 		delegate: TableRow {
 			TableCell {text: secondary; width: 100}
 			TableCell {text: name; width: 300}

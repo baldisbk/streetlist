@@ -1,8 +1,7 @@
 import QtQuick 2.0
 
-Rectangle {
+Item {
 	height: 20
-	color: "#00000000"
 	default property alias contents: row.data
 	signal select()
 	property bool selected: false

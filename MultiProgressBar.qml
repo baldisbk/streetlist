@@ -1,11 +1,12 @@
 import QtQuick 2.0
 
-Rectangle {
-
-	color: "#bf000000"
+Item {
 	property int mode
 	z: 100
-
+	Rectangle {
+		color: "#bf000000"
+		anchors.fill: parent
+	}
 	ListView {
 		id: progressBars
 		property int valHeight: 20

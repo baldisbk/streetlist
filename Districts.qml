@@ -3,16 +3,16 @@ import Streets 1.0
 
 Rectangle {
 	id: host
-	property DistrictModel model
+	property alias model: table.model
 	Table {
+		id: table
 		anchors.fill: parent
-		model: host.model
 		hasSelection: false
 		delegate: TableRow {
 			TableCell {text: region; width: 100}
 			TableCell {text: name; width: 300}
 			selected: model.selected
-			onSelect: host.model.select(index)
+			onSelect: table.model.select(index)
 		}
 		contentWidth: 400
 	}

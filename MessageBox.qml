@@ -1,11 +1,14 @@
 import QtQuick 2.0
 
-Rectangle {
+Item {
 	id: host
-	color: "#bf000000"
 	z: 150
 	visible: false
 	function display(txt) {thetext.text = txt; visible = true}
+	Rectangle {
+		color: "#bf000000"
+		anchors.fill: parent
+	}
 	Rectangle {
 		height: 300
 		width: parent.width - 20

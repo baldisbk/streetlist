@@ -1,6 +1,6 @@
 import QtQuick 2.0
 
-Rectangle {
+Item {
 	id: host
 	height: 50
 	state: "search"

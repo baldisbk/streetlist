@@ -1,6 +1,6 @@
 import QtQuick 2.0
 
-Rectangle {
+Item {
 	height: 100
 	property alias dmodel: districts.model
 	property alias rmodel: regions.model

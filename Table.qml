@@ -6,6 +6,7 @@ Flickable {
 	property alias delegate: list.delegate
 	property bool hasSelection: true
 	contentHeight: height
+	clip: true
 	ListView {
 		id: list
 		clip: true
@@ -13,13 +14,17 @@ Flickable {
 		height: view.height
 		highlight: Component {
 			id: highlightBar
-			Rectangle {
+			Item {
+				width: list.width
+				height: 20
 				visible: view.hasSelection
-				width: list.width; height: 20
-				gradient: Gradient {
-					GradientStop { position: 0.0; color: "#FFFF88" }
-					GradientStop { position: 0.5; color: "#00000000" }
-					GradientStop { position: 1.0; color: "#FFFF88" }
+				Rectangle {
+					anchors.fill: parent
+					gradient: Gradient {
+						GradientStop { position: 0.0; color: "#FFFF88" }
+						GradientStop { position: 0.5; color: "#00000000" }
+						GradientStop { position: 1.0; color: "#FFFF88" }
+					}
 				}
 			}
 		}

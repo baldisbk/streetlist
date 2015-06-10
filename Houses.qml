@@ -1,13 +1,13 @@
 import QtQuick 2.0
 import Streets 1.0
 
-Rectangle {
+Item {
 	id: host
 	width: 100
-	property HouseModel model
+	property alias model: table.model
 	Table {
+		id: table
 		anchors.fill: parent
-		model: host.model
 		delegate: TableRow {TableCell {text: name; width: 100}}
 		contentWidth: 100
 	}

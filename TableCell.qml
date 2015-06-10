@@ -1,15 +1,18 @@
 import QtQuick 2.0
 
-Rectangle {
-	id: host
-	property string text
-	border.width: 1
-	Text {
-		text: host.text
-		anchors.fill: parent
-		horizontalAlignment: Text.AlignLeft
-		verticalAlignment: Text.AlignVCenter
-	}
+Item {
+	property alias text: txt.text
 	height: 20
-	color: "#00000000"
+	Rectangle {
+		id: host
+		color: "#00000000"
+		border.width: 1
+		anchors.fill: parent
+		Text {
+			id: txt
+			anchors.fill: parent
+			horizontalAlignment: Text.AlignLeft
+			verticalAlignment: Text.AlignVCenter
+		}
+	}
 }
