@@ -7,8 +7,8 @@ import Streets 1.0
 Window {
 	id: mainwin
 	visible: true
-	height: sizer.sSize
-	width: sizer.sSize
+	height: Screen.desktopAvailableHeight
+	width: Screen.desktopAvailableWidth
 
 	StyleItem {id: sizer; visible: false}
 	StreetDB {
