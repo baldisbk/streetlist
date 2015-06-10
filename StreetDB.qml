@@ -1,9 +1,12 @@
 import QtQuick 2.0
 import Streets 1.0
 import QtQuick.LocalStorage 2.0
+import TheSystem 1.0
 
 QtObject {
 	property StreetList streets: StreetList{}
+
+	property SystemFunc system: SystemFunc {}
 
 	property var db
 
@@ -90,7 +93,7 @@ QtObject {
 		tx.executeSql('DELETE FROM TmpDis')
 		tx.executeSql('DELETE FROM TmpStrInDis')
 		progress(0, 0, strts.length)
-		streets.processEvents()
+		system.processEvents()
 		for (i=0; i<strts.length; i++) {
 			var street = streets.street(strts[i])
 			tx.executeSql(
@@ -99,10 +102,10 @@ QtObject {
 				[street.wholeName, street.name, street.secondary,
 				 street.houses, street.type, street.number])
 			progress(0, i+1, strts.length)
-			streets.processEvents()
+			system.processEvents()
 		}
 		progress(1, 0, districts.length)
-		streets.processEvents()
+		system.processEvents()
 		for (i=0; i<districts.length; i++) {
 			var district = streets.district(districts[i])
 			var res = tx.executeSql(
@@ -117,7 +120,7 @@ QtObject {
 					[res.insertId, strlist[s]])
 			}
 			progress(1, i+1, districts.length)
-			streets.processEvents()
+			system.processEvents()
 		}
 	}
 
@@ -128,29 +131,29 @@ QtObject {
 
 		res = tx.executeSql('SELECT * FROM TmpStr')
 		progress(0, 0, res.rows.length)
-		streets.processEvents()
+		system.processEvents()
 		for (i = 0; i < res.rows.length; ++i) {
 			streets.addStreet(res.rows.item(i));
 			progress(0, i+1, res.rows.length)
-			streets.processEvents()
+			system.processEvents()
 		}
 
 		res = tx.executeSql('SELECT DISTINCT region AS name FROM TmpDis')
 		progress(1, 0, res.rows.length)
-		streets.processEvents()
+		system.processEvents()
 		for (i = 0; i < res.rows.length; ++i) {
 			streets.addRegion(res.rows.item(i));
 			progress(1, i+1, res.rows.length)
-			streets.processEvents()
+			system.processEvents()
 		}
 
 		res = tx.executeSql('SELECT * FROM TmpDis')
 		progress(2, 0, res.rows.length)
-		streets.processEvents()
+		system.processEvents()
 		for (i = 0; i < res.rows.length; ++i) {
 			streets.addDistrict(res.rows.item(i));
 			progress(2, i+1, res.rows.length)
-			streets.processEvents()
+			system.processEvents()
 		}
 
 		res = tx.executeSql(
@@ -159,11 +162,11 @@ QtObject {
 			' JOIN TmpDis ON TmpDis.uid=dis'+
 			' JOIN TmpStr ON TmpStr.uid=str')
 		progress(3, 0, res.rows.length)
-		streets.processEvents()
+		system.processEvents()
 		for (i = 0; i < res.rows.length; ++i) {
 			streets.addStreetToDistrict(res.rows.item(i));
 			progress(3, i+1, res.rows.length)
-			streets.processEvents()
+			system.processEvents()
 		}
 	}
 

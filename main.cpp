@@ -10,12 +10,14 @@
 #include "street.h"
 #include "district.h"
 #include "region.h"
+#include "systemfunc.h"
 
 int main(int argc, char *argv[])
 {
 	QGuiApplication app(argc, argv);
 
 	QQmlApplicationEngine engine;
+	qmlRegisterType<SystemFunc>("TheSystem", 1, 0, "SystemFunc");
 	qmlRegisterType<Street>("Streets", 1, 0, "Street");
 	qmlRegisterType<Region>("Streets", 1, 0, "Region");
 	qmlRegisterType<District>("Streets", 1, 0, "District");

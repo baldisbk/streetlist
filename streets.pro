@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     district.cpp \
     districtmodel.cpp \
     regionmodel.cpp \
-    housemodel.cpp
+    housemodel.cpp \
+    systemfunc.cpp
 
 RESOURCES += qml.qrc \
     pictures.qrc
@@ -31,7 +32,8 @@ HEADERS += \
     district.h \
     districtmodel.h \
     regionmodel.h \
-    housemodel.h
+    housemodel.h \
+    systemfunc.h
 
 DISTFILES += \
     android/AndroidManifest.xml \
