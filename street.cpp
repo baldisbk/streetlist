@@ -4,13 +4,16 @@
 
 #include "district.h"
 
+#define MAX_NUMERIC 19
 //#define PARSE_HOUSES
 
-QList<QRegExp> StreetParser::mStreetTypes;
+QStringList StreetParser::mStreetTypes;
 QStringList StreetParser::mStreetSecondaries;
 QStringList StreetParser::mPostfixes;
 QStringList StreetParser::mUAlpha;
 QStringList StreetParser::mLAlpha;
+QMap<int, QString> StreetParser::mNumerics;
+QMap<QString, StreetParser::Gender> StreetParser::mGenders;
 
 void StreetParser::init()
 {
@@ -47,9 +50,11 @@ void StreetParser::init()
 		mPostfixes
 			<< "ий"
 			<< "ый"
+			<< "ой"
 			<< "й"
 			<< "ая"
 			<< "яя"
+			<< "ья"
 			<< "я"
 			<< "ое"
 			<< "ее"
@@ -71,11 +76,77 @@ void StreetParser::init()
 			<< "ч" << "ш" << "щ" << "ъ" << "ы" << "ь" << "э" << "ю"
 			<< "я";
 		foreach (QString type, types) {
-			QRegExp re(QString("\\b%1\\b").arg(type));
-			re.setCaseSensitivity(Qt::CaseInsensitive);
-			mStreetTypes.append(re);
+		//	QRegExp re(QString("\\b%1\\b").arg(type));
+		//	re.setCaseSensitivity(Qt::CaseInsensitive);
+			mStreetTypes.append(type);
+		}
+
+		mNumerics.insert(1, "перв");
+		mNumerics.insert(2, "втор");
+		mNumerics.insert(3, "трет");
+		mNumerics.insert(4, "четверт");
+		mNumerics.insert(5, "пят");
+		mNumerics.insert(6, "шест");
+		mNumerics.insert(7, "седьм");
+		mNumerics.insert(8, "восьм");
+		mNumerics.insert(9, "девят");
+		mNumerics.insert(10, "десят");
+		mNumerics.insert(11, "одиннадцат");
+		mNumerics.insert(12, "двенадцат");
+		mNumerics.insert(13, "тринадцат");
+		mNumerics.insert(14, "четырнадцат");
+		mNumerics.insert(15, "пятнадцат");
+		mNumerics.insert(16, "шестнадцат");
+		mNumerics.insert(17, "семнадцат");
+		mNumerics.insert(18, "восемнадцат");
+		mNumerics.insert(19, "девятнадцат");
+
+		foreach(QString type, types) {
+			QChar last = type.at(type.size() - 1);
+			if (last == L'е')
+				mGenders[type] = Other;
+			else if (last == L'а')
+				mGenders[type] = Female;
+			else if (last == L'я')
+				mGenders[type] = Female;
+			else if (last == L'ь')
+				mGenders[type] = Female;
+			else
+				mGenders[type] = Male;
 		}
 	}
+}
+
+QString StreetParser::numeric(int num, Gender gnd)
+{
+	int actnum = num%20;
+	if (actnum != num || actnum == 0)
+		return QString();
+
+	int endIndex;
+	switch (gnd) {
+	case Male:
+		if (actnum == 3)
+			endIndex = 0;
+		else if (actnum == 2 || actnum == 6 || actnum == 7 || actnum == 8)
+			endIndex = 2;
+		else
+			endIndex = 1;
+		break;
+	case Female:
+		if (actnum == 3)
+			endIndex = 6;
+		else
+			endIndex = 4;
+		break;
+	case Other:
+		if (actnum == 3)
+			endIndex = 10;
+		else
+			endIndex = 8;
+		break;
+	}
+	return mNumerics[actnum] + mPostfixes[endIndex];
 }
 
 ElemNumber StreetParser::parseElemNumber(int &pos, const QString &name)
@@ -201,12 +272,14 @@ QStringList StreetParser::split(QString name)
 		n.remove(captureNum2);
 	}
 
-	foreach(QRegExp re, mStreetTypes)
+	foreach(QString type, mStreetTypes) {
+		QRegExp re(QString("\\b%1\\b").arg(type));
 		if (re.indexIn(n) != -1) {
 			res[nfType] = re.cap(0).toLower();
 			n.remove(re);
 			break;
 		}
+	}
 
 	n = n.simplified();
 
@@ -270,6 +343,31 @@ QList<House> StreetParser::splitHouses(QString houses)
 	return res;
 }
 
+QString StreetParser::canonical(QStringList names)
+{
+	QStringList res;
+	QString num;
+	if (!names.at(nfNumber).isEmpty()) {
+		bool ok;
+		int n = names.at(nfNumber).toInt(&ok);
+		if (ok && n <= MAX_NUMERIC)
+			res << numeric(n, mGenders.value(names.at(nfType)));
+		else
+			num = names.at(nfNumber);
+	}
+	if (!names.at(nfSecondary).isEmpty())
+		res << names.at(nfSecondary);
+	res << names.at(nfName);
+	if (!num.isEmpty())
+		res << num;
+	return res.join(" ").toLower();
+}
+
+int StreetParser::letterNumber(QChar letter)
+{
+	return mLAlpha.indexOf(letter) + 1;
+}
+
 
 Street::Street(QObject *parent): QObject(parent)
 {
@@ -323,6 +421,14 @@ QString Street::houses() const
 	foreach(House h, mHouses)
 		houses.append(h.toString());
 	return houses.join(',');
+}
+
+int Street::letterNumber(int index) const
+{
+	QString canonical = StreetParser::canonical(nameList()).remove(" ");
+	if (index <= 0 || index > canonical.size())
+		return 0;
+	return StreetParser::letterNumber(canonical.toLower().at(index - 1));
 }
 
 void Street::addHouse(const QString &house)

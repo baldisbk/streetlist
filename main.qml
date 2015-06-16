@@ -203,7 +203,10 @@ Window {
 	}
 	Connections {
 		target: streetmodel
-		onSelected: streetlist.current = index
+		onSelected: {
+			streetlist.current = index
+			houselist.current = hindex
+		}
 	}
 
 	Component.onCompleted: {

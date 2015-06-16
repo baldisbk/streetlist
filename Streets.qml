@@ -7,6 +7,7 @@ StyleItem {
 	property alias maxWidth: table.contentWidth
 	property string selected: ""
 	property alias current: table.current
+	onCurrentChanged: selected = model.nameForRow(current)
 	Table {
 		id: table
 		anchors.fill: parent

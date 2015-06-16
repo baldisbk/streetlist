@@ -38,6 +38,8 @@ public:
 
 public slots:
 	void setHost(StreetList* host);
+	QString nameForRow(int row) const;
+	int rowForName(QString name) const;
 
 	void init();
 	void filter(QString district, bool flag);
@@ -47,7 +49,9 @@ public slots:
 
 signals:
 	void hostChanged(StreetList* host);
-	void selected(int index);
+	void selected(int index, int hindex);
+	void error(QString desc);
+	void notFound();
 
 private:
 	QList<Street*> mStreets;

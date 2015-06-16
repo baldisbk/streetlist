@@ -56,19 +56,31 @@ public:
 	static QStringList split(QString name);
 	static QString join(QStringList names);
 	static QList<House> splitHouses(QString houses);
+	static QString canonical(QStringList names);
+	static int letterNumber(QChar letter);
 
 private:
+	enum Gender {
+		Male,
+		Female,
+		Other
+	};
+
 	static void init();
+
+	static QString numeric(int num, Gender gnd);
 
 	static ElemNumber parseElemNumber(int& pos, const QString& name);
 	static Number parseNumber(int& pos, const QString& name);
 	static ElemHouse parseElemHouse(int& pos, const QString& name);
 
-	static QList<QRegExp> mStreetTypes;
+	static QStringList mStreetTypes;
 	static QStringList mStreetSecondaries;
 	static QStringList mPostfixes;
 	static QStringList mUAlpha;
 	static QStringList mLAlpha;
+	static QMap<int, QString> mNumerics;
+	static QMap<QString, Gender> mGenders;
 };
 
 class Street : public QObject {
@@ -92,6 +104,8 @@ public:
 	QString secondary() const;
 	QString wholeName() const;
 	QString houses() const;
+
+	int letterNumber(int index) const;
 
 	Q_INVOKABLE void addHouse(const QString& house);
 	Q_INVOKABLE QStringList houseList() const;
