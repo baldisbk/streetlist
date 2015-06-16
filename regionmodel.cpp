@@ -113,3 +113,28 @@ void RegionModel::select(int index)
 	emit dataChanged(ind, ind);
 	emit updated();
 }
+
+void RegionModel::selectAll()
+{
+	selectEvery(true);
+}
+
+void RegionModel::selectNone()
+{
+	selectEvery(false);
+}
+
+void RegionModel::selectEvery(bool sel)
+{
+	for (int i = 0; i < mRegions.size(); ++i) {
+		Region* region = mRegions.at(i);
+		bool flag = mSelected.value(region->name(), false);
+		mSelected[region->name()] = sel;
+		if (flag != sel) {
+			emit selected(region->name(), sel);
+			QModelIndex ind = createIndex(i, 0);
+			emit dataChanged(ind, ind);
+		}
+	}
+	emit updated();
+}

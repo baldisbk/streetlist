@@ -122,6 +122,16 @@ void DistrictModel::select(int index)
 	emit updated();
 }
 
+void DistrictModel::selectAll()
+{
+	selectEvery(true);
+}
+
+void DistrictModel::selectNone()
+{
+	selectEvery(false);
+}
+
 void DistrictModel::filter(QString region, bool flag)
 {
 	if (flag) {
@@ -131,6 +141,21 @@ void DistrictModel::filter(QString region, bool flag)
 		if (mFilter.contains(region))
 			mFilter.removeAll(region);
 	}
+}
+
+void DistrictModel::selectEvery(bool sel)
+{
+	for (int i = 0; i < mDistricts.size(); ++i) {
+		District* district = mDistricts.at(i);
+		bool flag = mSelected.value(district->name(), false);
+		mSelected[district->name()] = sel;
+		if (flag != sel) {
+			emit selected(district->name(), sel);
+			QModelIndex ind = createIndex(i, 0);
+			emit dataChanged(ind, ind);
+		}
+	}
+	emit updated();
 }
 
 void DistrictModel::refresh()

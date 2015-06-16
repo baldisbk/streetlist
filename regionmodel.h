@@ -39,12 +39,16 @@ public slots:
 	void refresh();
 	void select(int index);
 
+	void selectAll();
+	void selectNone();
+
 signals:
 	void hostChanged(StreetList* host);
 	void selected(QString name, bool flag);
 	void updated();
 
 private:
+	void selectEvery(bool sel);
 	QList<Region*> mRegions;
 	QMap<QString, bool> mSelected;
 	StreetList* mHost;

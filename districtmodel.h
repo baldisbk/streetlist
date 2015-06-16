@@ -37,6 +37,8 @@ public slots:
 	void setHost(StreetList* host);
 
 	void select(int index);
+	void selectAll();
+	void selectNone();
 
 	void init();
 	void refresh();
@@ -48,6 +50,7 @@ signals:
 	void updated();
 
 private:
+	void selectEvery(bool sel);
 	QList<District*> mDistricts;
 	QMap<QString, bool> mSelected;
 	QStringList mFilter;
