@@ -201,13 +201,13 @@ QString TokenParser::calculate(Street *street)
 			op2 = stack.pop();
 			switch (t.value) {
 			case otPlus: stack.push(op1 + op2); break;
-			case otMinus: stack.push(op1 - op2); break;
+			case otMinus: stack.push(op2 - op1); break;
 			case otMultiply: stack.push(op1 * op2); break;
-			case otDivide: if (op2 == 0) {
+			case otDivide: if (op1 == 0) {
 					error = "Zero divide";
 					stack.push(1);
 				} else
-					stack.push(op1 / op2);
+					stack.push(op2 / op1);
 				break;
 			}
 			break;
