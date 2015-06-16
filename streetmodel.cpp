@@ -381,6 +381,8 @@ public:
 				int num = t.value;
 				if (t.type == Variable)
 					num = street->letterNumber(num);
+				if (num <= 0)
+					return QString();
 				stack.push(num);
 			}
 			default:;
@@ -426,10 +428,12 @@ void StreetModel::bruteforce(const QString &exp, int indexFrom)
 			emit error(QString("Evaluate error: %1").arg(tp.error));
 			return;
 		}
-		int hIndex = mStreets[index]->houseList().indexOf(res);
-		if (hIndex != -1) {
-			emit selected(index, hIndex);
-			return;
+		if (!res.isEmpty()) {
+			int hIndex = mStreets[index]->houseList().indexOf(res);
+			if (hIndex != -1) {
+				emit selected(index, hIndex);
+				return;
+			}
 		}
 
 		++index;

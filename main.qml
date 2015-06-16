@@ -207,6 +207,8 @@ Window {
 			streetlist.current = index
 			houselist.current = hindex
 		}
+		onNotFound: messagebox.display("Nothing found")
+		onError: messagebox.display(desc)
 	}
 
 	Component.onCompleted: {
