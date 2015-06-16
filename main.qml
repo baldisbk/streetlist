@@ -85,7 +85,7 @@ Window {
 						streetmap.visible = false
 					}
 				}
-				PropertyChanges {target: submenu; visible: false}
+				PropertyChanges {target: search; visible: false}
 				PropertyChanges {target: filters; visible: true}
 			},
 			State {
@@ -99,7 +99,7 @@ Window {
 						streetmap.visible = false
 					}
 				}
-				PropertyChanges {target: submenu; visible: true}
+				PropertyChanges {target: search; visible: true}
 				PropertyChanges {target: filters; visible: false}
 			},
 			State {
@@ -114,7 +114,7 @@ Window {
 						lists.height = sizer.subtableSize
 					}
 				}
-				PropertyChanges {target: submenu; visible: false}
+				PropertyChanges {target: search; visible: false}
 				PropertyChanges {target: filters; visible: false}
 			},
 			State {
@@ -129,7 +129,7 @@ Window {
 						lists.height = sizer.subtableSize
 					}
 				}
-				PropertyChanges {target: submenu; visible: false}
+				PropertyChanges {target: search; visible: false}
 				PropertyChanges {target: filters; visible: false}
 			},
 			State {
@@ -144,7 +144,7 @@ Window {
 						lists.height = sizer.subtableSize
 					}
 				}
-				PropertyChanges {target: submenu; visible: false}
+				PropertyChanges {target: search; visible: false}
 				PropertyChanges {target: filters; visible: false}
 			},
 			State {
@@ -158,7 +158,7 @@ Window {
 						lists.visible = false
 					}
 				}
-				PropertyChanges {target: submenu; visible: false}
+				PropertyChanges {target: search; visible: false}
 				PropertyChanges {target: filters; visible: false}
 			}
 		]
@@ -173,9 +173,9 @@ Window {
 		central: board
 		Mainmenu {id: menu}
 		Separator {}
-		Submenu {id: submenu}
+		Search {id: search}
 		Filter {id: filters; rmodel: regionmodel; dmodel: districtmodel}
-		Separator {visible: submenu.visible || filters.visible}
+		Separator {visible: search.visible || filters.visible}
 		AutoLayout {
 			id: board
 			orientation: Qt.Vertical
@@ -195,9 +195,9 @@ Window {
 	}
 
 	Connections {
-		target: submenu
+		target: search
 		onSearch: {
-			if (submenu.state == "brute")
+			if (search.state == "brute")
 				streetmodel.bruteforce(str, streetlist.current)
 		}
 	}
