@@ -18,6 +18,7 @@ Item {
 	property int buttonBorder: 1
 	property int cellBorder: 1
 	property int editorBorder: 1
+	property int headerBorder: 2
 	property int buttonShift: sSize / 50
 	property int fullscreenBorder: sSize / 20
 	property int subtableSize: textlineHeight * 5

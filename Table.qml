@@ -1,9 +1,10 @@
-import QtQuick 2.0
+import QtQuick 2.4
 
 Flickable {
 	id: view
 	property alias model: list.model
 	property alias delegate: list.delegate
+	property alias header: list.header
 	property bool hasSelection: true
 	property alias current: list.currentIndex
 	contentHeight: height
@@ -13,6 +14,7 @@ Flickable {
 		clip: true
 		width: view.contentWidth
 		height: view.height
+		headerPositioning: ListView.PullBackHeader
 		highlight: Component {
 			id: highlightBar
 			StyleItem {

@@ -24,5 +24,7 @@
         <file>LineEdit.qml</file>
         <file>MessageBox.qml</file>
         <file>StyleItem.qml</file>
+        <file>TableHeader.qml</file>
+        <file>TableHeaderCell.qml</file>
     </qresource>
 </RCC>
