@@ -97,6 +97,7 @@ public:
 	Q_PROPERTY(QString wholeName READ wholeName WRITE setWholeName NOTIFY wholeNameChanged)
 	Q_PROPERTY(QString houses READ houses WRITE setHouses NOTIFY housesChanged)
 	Q_PROPERTY(QString secondary READ secondary WRITE setSecondary NOTIFY secondaryChanged)
+	Q_PROPERTY(QString canonical READ canonical)
 
 	QString name() const;
 	QString type() const;
@@ -106,6 +107,7 @@ public:
 	QString houses() const;
 
 	int letterNumber(int index) const;
+	QString canonical() const;
 
 	Q_INVOKABLE void addHouse(const QString& house);
 	Q_INVOKABLE QStringList houseList() const;

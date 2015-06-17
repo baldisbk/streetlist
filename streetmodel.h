@@ -20,7 +20,8 @@ public:
 		TypeRole,
 		NumberRole,
 		SecondaryRole,
-		HousesRole
+		HousesRole,
+		CanonicalRole
 	};
 
 	// QAbstractItemModel interface

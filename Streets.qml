@@ -13,12 +13,19 @@ StyleItem {
 		anchors.fill: parent
 		delegate: TableRow {
 			TableCell {text: secondary; width: fontWidth*10}
-			TableCell {text: name; width: fontWidth*40}
+			TableCell {text: canonical; width: fontWidth*40}
 			TableCell {text: number; width: fontWidth*5}
 			TableCell {text: type; width: fontWidth*10}
 			onSelect: host.selected = wholeName
 		}
 		contentWidth: fontWidth*65
+		header: TableHeader {
+			TableHeaderCell {text: "Secondary"; width: fontWidth*10}
+			TableHeaderCell {text: "Name"; width: fontWidth*40}
+			TableHeaderCell {text: "№"; width: fontWidth*5}
+			TableHeaderCell {text: "Type"; width: fontWidth*10}
+			Component.onCompleted: sort(1, false)
+		}
 	}
 }
 

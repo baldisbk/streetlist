@@ -61,6 +61,8 @@ QVariant StreetModel::data(const QModelIndex &index, int role) const
 		return street->houses();
 	case SecondaryRole:
 		return street->secondary();
+	case CanonicalRole:
+		return street->canonical();
 	default:;
 	}
 	return QVariant();
@@ -75,6 +77,7 @@ QHash<int, QByteArray> StreetModel::roleNames() const
 	res[NumberRole] = "number";
 	res[HousesRole] = "houses";
 	res[SecondaryRole] = "secondary";
+	res[CanonicalRole] = "canonical";
 	return res;
 }
 

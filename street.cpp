@@ -360,7 +360,8 @@ QString StreetParser::canonical(QStringList names)
 	res << names.at(nfName);
 	if (!num.isEmpty())
 		res << num;
-	return res.join(" ").toLower();
+	res << names.at(nfType);
+	return res.join(" ");
 }
 
 int StreetParser::letterNumber(QChar letter)
@@ -425,7 +426,7 @@ QString Street::houses() const
 
 int Street::letterNumber(int index) const
 {
-	QString canonical = StreetParser::canonical(nameList()).remove(" ");
+	QString canonical = StreetParser::canonical(nameList()).toLower().remove(" ");
 	if (index <= 0 || index > canonical.size())
 		return 0;
 	return StreetParser::letterNumber(canonical.toLower().at(index - 1));
@@ -466,6 +467,11 @@ void Street::removeDistrict(District *district)
 		mDistricts.remove(district->name());
 	if (district->streets().contains(wholeName()))
 		district->removeStreet(this);
+}
+
+QString Street::canonical() const
+{
+	return StreetParser::canonical(nameList());
 }
 
 QString Street::secondary() const
