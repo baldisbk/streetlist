@@ -2,17 +2,17 @@
 #define STREETMODEL_H
 
 #include <QAbstractItemModel>
+#include <QSortFilterProxyModel>
 
 #include "streetdownloader.h"
 
-class StreetModel : public QAbstractItemModel
+class BaseStreetModel : public QAbstractItemModel
 {
 	Q_OBJECT
 	Q_ENUMS(Roles)
 public:
-	StreetModel(QObject* parent = NULL);
-	StreetModel(StreetList* host, QObject* parent = NULL);
-	~StreetModel();
+	BaseStreetModel(QObject* parent = NULL);
+	BaseStreetModel(StreetList* host, QObject* parent = NULL);
 
 	enum Roles {
 		WholeNameRole = Qt::UserRole + 1,
@@ -33,30 +33,70 @@ public:
 	virtual QVariant data(const QModelIndex &index, int role) const;
 	virtual QHash<int, QByteArray> roleNames() const;
 
+	StreetList* host() const;
+
+	Street* street(int row) const;
+
+public slots:
+	void setHost(StreetList* host);
+
+	void init();
+
+signals:
+	void hostChanged(StreetList* host);
+
+private:
+	QList<Street*> mStreets;
+	StreetList* mHost;
+};
+
+class StreetModel: public QSortFilterProxyModel {
+	Q_OBJECT
+	Q_ENUMS(Roles)
+
+public:
+	StreetModel(QObject* parent = NULL);
+	StreetModel(StreetList* host, QObject* parent = NULL);
+
+	enum Roles {
+		WholeNameRole = Qt::UserRole + 1,
+		NameRole,
+		TypeRole,
+		NumberRole,
+		SecondaryRole,
+		HousesRole,
+		CanonicalRole
+	};
+
 	Q_PROPERTY(StreetList* host READ host WRITE setHost NOTIFY hostChanged)
 
 	StreetList* host() const;
 
 public slots:
-	void setHost(StreetList* host);
 	QString nameForRow(int row) const;
 	int rowForName(QString name) const;
 
-	void init();
 	void filter(QString district, bool flag);
 	void refresh();
+	void setHost(StreetList* arg);
+	void init();
 
 	void bruteforce(const QString& exp, int indexFrom);
 
+protected:
+	virtual bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
+
 signals:
-	void hostChanged(StreetList* host);
+	void hostChanged(StreetList* arg);
 	void selected(int index, int hindex);
 	void error(QString desc);
 	void notFound();
 
 private:
-	QList<Street*> mStreets;
-	StreetList* mHost;
+	int rowToSource(int row) const;
+	int rowFromSource(int row) const;
+
+	BaseStreetModel* mParent;
 	QMap<QString, bool> mFilter;
 };
 
