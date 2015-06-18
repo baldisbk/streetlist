@@ -81,25 +81,25 @@ void StreetParser::init()
 			mStreetTypes.append(type);
 		}
 
-		mNumerics.insert(1, "перв");
-		mNumerics.insert(2, "втор");
-		mNumerics.insert(3, "трет");
-		mNumerics.insert(4, "четверт");
-		mNumerics.insert(5, "пят");
-		mNumerics.insert(6, "шест");
-		mNumerics.insert(7, "седьм");
-		mNumerics.insert(8, "восьм");
-		mNumerics.insert(9, "девят");
-		mNumerics.insert(10, "десят");
-		mNumerics.insert(11, "одиннадцат");
-		mNumerics.insert(12, "двенадцат");
-		mNumerics.insert(13, "тринадцат");
-		mNumerics.insert(14, "четырнадцат");
-		mNumerics.insert(15, "пятнадцат");
-		mNumerics.insert(16, "шестнадцат");
-		mNumerics.insert(17, "семнадцат");
-		mNumerics.insert(18, "восемнадцат");
-		mNumerics.insert(19, "девятнадцат");
+		mNumerics.insert(1, "Перв");
+		mNumerics.insert(2, "Втор");
+		mNumerics.insert(3, "Трет");
+		mNumerics.insert(4, "Четверт");
+		mNumerics.insert(5, "Пят");
+		mNumerics.insert(6, "Шест");
+		mNumerics.insert(7, "Седьм");
+		mNumerics.insert(8, "Восьм");
+		mNumerics.insert(9, "Девят");
+		mNumerics.insert(10, "Десят");
+		mNumerics.insert(11, "Одиннадцат");
+		mNumerics.insert(12, "Двенадцат");
+		mNumerics.insert(13, "Тринадцат");
+		mNumerics.insert(14, "Четырнадцат");
+		mNumerics.insert(15, "Пятнадцат");
+		mNumerics.insert(16, "Шестнадцат");
+		mNumerics.insert(17, "Семнадцат");
+		mNumerics.insert(18, "Восемнадцат");
+		mNumerics.insert(19, "Девятнадцат");
 
 		foreach(QString type, types) {
 			QChar last = type.at(type.size() - 1);
@@ -357,7 +357,8 @@ QString StreetParser::canonical(QStringList names)
 	}
 	if (!names.at(nfSecondary).isEmpty())
 		res << names.at(nfSecondary);
-	res << names.at(nfName);
+	if (!names.at(nfName).isEmpty())
+		res << names.at(nfName);
 	if (!num.isEmpty())
 		res << num;
 	res << names.at(nfType);
