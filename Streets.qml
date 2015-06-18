@@ -12,26 +12,29 @@ StyleItem {
 		id: table
 		anchors.fill: parent
 		delegate: TableRow {
-			TableCell {text: secondary; width: fontWidth*10}
 			TableCell {text: canonical; width: fontWidth*40}
+			TableCell {text: secondary; width: fontWidth*10}
 			TableCell {text: number; width: fontWidth*5}
 			TableCell {text: type; width: fontWidth*10}
 			onSelect: host.selected = wholeName
 		}
 		contentWidth: fontWidth*65
 		header: TableHeader {
-			TableHeaderCell {text: "Secondary"; width: fontWidth*10}
 			TableHeaderCell {text: "Name"; width: fontWidth*40}
+			TableHeaderCell {text: "Feat."; width: fontWidth*10}
 			TableHeaderCell {text: "№"; width: fontWidth*5}
 			TableHeaderCell {text: "Type"; width: fontWidth*10}
-			Component.onCompleted: sort(1, false)
+			Component.onCompleted: sort(0, false)
 			onSorted: {
+				var sel = selected
+				current = -1
 				switch(pid) {
-				case 0: model.sort("secondary", dir?1:0); break;
-				case 1: model.sort("canonical", dir?1:0); break;
+				case 0: model.sort("canonical", dir?1:0); break;
+				case 1: model.sort("secondary", dir?1:0); break;
 				case 2: model.sort("number", dir?1:0); break;
 				case 3: model.sort("type", dir?1:0); break;
 				}
+				current = model.rowForName(sel)
 			}
 		}
 	}
