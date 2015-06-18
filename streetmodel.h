@@ -82,6 +82,7 @@ public slots:
 	void init();
 
 	void bruteforce(const QString& exp, int indexFrom);
+	void sort(QString role, bool order);
 
 protected:
 	virtual bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;

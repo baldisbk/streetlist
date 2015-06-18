@@ -199,6 +199,16 @@ void StreetModel::bruteforce(const QString &exp, int indexFrom)
 	emit notFound();
 }
 
+void StreetModel::sort(QString role, bool order)
+{
+	int irole = roleNames().key(role.toStdString().c_str(), -1);
+	if (irole == -1)
+		return;
+	setSortRole(irole);
+	QSortFilterProxyModel::sort(
+		0, order ? Qt::DescendingOrder : Qt::AscendingOrder);
+}
+
 StreetList *StreetModel::host() const
 {
 	return mParent->host();

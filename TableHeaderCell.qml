@@ -37,7 +37,6 @@ StyleItem {
 		}
 		Canvas {
 			id: canvas
-			z: 10
 			anchors {
 				top: parent.top
 				right: parent.right
