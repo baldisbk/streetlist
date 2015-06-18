@@ -21,7 +21,7 @@ StyleItem {
 		id: host
 		gradient: Gradient {
 			GradientStop { position: 0.0; color: selectedColor }
-			GradientStop { position: 0.5; color: selected?selectedColor:transparentColor }
+			GradientStop { position: 0.5; color: selected?selectedColor:emptyColor }
 			GradientStop { position: 1.0; color: selectedColor }
 		}
 		border.width: headerBorder

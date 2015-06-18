@@ -2,6 +2,7 @@ import QtQuick 2.0
 
 StyleItem {
 	height: textlineHeight
+	z: 2
 	default property alias contents: row.data
 	signal sorted(int pid, bool dir)
 	Row {id: row}
