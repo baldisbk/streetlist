@@ -1,10 +1,12 @@
-import QtQuick 2.0
+import QtQuick 2.4
 
 Rectangle {
 	id: host
 	border.width: editorBorder
 	height: textlineHeight
 	property alias text: input.text
+	property alias editable: input.activeFocusOnPress
+	signal enter()
 	Flickable {
 		id: flick
 		anchors.fill: host
@@ -28,9 +30,24 @@ Rectangle {
 			id: input
 			width: flick.width
 			height: flick.height
-			focus: true
+			focus: false
 			verticalAlignment: TextEdit.AlignVCenter
 			onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
 		}
+	}
+	MouseArea {
+		visible: !editable
+		anchors.fill: parent
+		onClicked: keyboard.visible = true
+	}
+
+	NumKeyboard {
+		id: keyboard
+		anchors.top: parent.bottom
+		visible: false
+		onEnter: {visible = false; host.enter()}
+		onInput: input.text = input.text + ch
+		onClear: input.text = ""
+		onBackspace: input.text = input.text.substring(0, input.text.length - 1)
 	}
 }

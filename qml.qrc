@@ -26,5 +26,6 @@
         <file>StyleItem.qml</file>
         <file>TableHeader.qml</file>
         <file>TableHeaderCell.qml</file>
+        <file>NumKeyboard.qml</file>
     </qresource>
 </RCC>

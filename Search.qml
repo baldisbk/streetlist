@@ -5,6 +5,7 @@ StyleItem {
 	signal search(string str)
 	height: buttonSize
 	state: "brute"
+	z: 10
 	states: [
 		State {
 			name: "brute"
@@ -32,7 +33,9 @@ StyleItem {
 		LineEdit {
 			id: bfEditor
 			visible: false
+			editable: false
 			width: host.width - buttonSize * 3
+			onEnter: search(bfEditor.text)
 		}
 		Button {
 			id: bfRun
