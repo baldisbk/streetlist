@@ -22,6 +22,7 @@ Item {
 	property int buttonShift: sSize / 50
 	property int fullscreenBorder: sSize / 20
 	property int subtableSize: textlineHeight * 5
+	property int scrollerSize: fontWidth / 3
 
 	// animation
 	property int buttonAnimation: 100
