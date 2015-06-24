@@ -20,20 +20,35 @@ Window {
 		}
 	}
 
-	RegionModel {id: regionmodel; host: database.streets}
-	DistrictModel {id: districtmodel; host: database.streets}
-	StreetModel {id: streetmodel; host: database.streets}
-	HouseModel {id: housemodel; host: database.streets; street: streetlist.selected}
-
-	Connections {
-		target: regionmodel
+	RegionModel {
+		id: regionmodel
+		host: database.streets
 		onSelected: districtmodel.filter(name, flag)
 		onUpdated: districtmodel.refresh()
 	}
-	Connections {
-		target: districtmodel
+
+	DistrictModel {
+		id: districtmodel
+		host: database.streets
 		onSelected: streetmodel.filter(name, flag)
 		onUpdated: streetmodel.refresh()
+	}
+
+	StreetModel {
+		id: streetmodel
+		host: database.streets
+		searchString: search.searchString
+		streetIndex: streetlist.current
+		onNotFound: messagebox.display("Nothing found")
+		onError: messagebox.display(desc)
+		onStreetIndexChanged: streetlist.current = streetIndex
+		onHouseIndexChanged: houselist.current = houseIndex
+	}
+
+	HouseModel {
+		id: housemodel
+		host: database.streets
+		street: streetlist.selected
 	}
 
 	MultiProgressBar {id: progressBars; mode: 0; anchors.fill: parent}
@@ -173,7 +188,7 @@ Window {
 		central: board
 		Mainmenu {id: menu}
 		Separator {}
-		Search {id: search}
+		Search {id: search; searchedString: streetmodel.houseFound}
 		Filter {id: filters; rmodel: regionmodel; dmodel: districtmodel}
 		Separator {visible: search.visible || filters.visible}
 		AutoLayout {
@@ -198,17 +213,8 @@ Window {
 		target: search
 		onSearch: {
 			if (search.state == "brute")
-				streetmodel.bruteforce(str, streetlist.current)
+				streetmodel.bruteforce()
 		}
-	}
-	Connections {
-		target: streetmodel
-		onSelected: {
-			streetlist.current = index
-			houselist.current = hindex
-		}
-		onNotFound: messagebox.display("Nothing found")
-		onError: messagebox.display(desc)
 	}
 
 	Component.onCompleted: {

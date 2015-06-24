@@ -2,7 +2,9 @@ import QtQuick 2.0
 
 StyleItem {
 	id: host
-	signal search(string str)
+	property string searchString
+	property alias searchedString: foundText.text
+	signal search()
 	height: buttonSize
 	state: "brute"
 	z: 10
@@ -34,8 +36,20 @@ StyleItem {
 			id: bfEditor
 			visible: false
 			editable: false
-			width: host.width - buttonSize * 3
+			width: host.width - buttonSize * 3 - label.width
 			onEnter: search(bfEditor.text)
+			onTextChanged: if (visible) searchString = text
+			onVisibleChanged: if (visible) searchString = text
+		}
+		Rectangle {
+			id: label
+			width: fontWidth * 10
+			Text {
+				id: foundText
+				anchors.fill: parent
+				horizontalAlignment: Text.AlignLeft
+				verticalAlignment: Text.AlignVCenter
+			}
 		}
 		Button {
 			id: bfRun

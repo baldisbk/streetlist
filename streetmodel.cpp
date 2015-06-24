@@ -159,14 +159,14 @@ void StreetModel::refresh()
 	invalidateFilter();
 }
 
-void StreetModel::bruteforce(const QString &exp, int indexFrom)
+void StreetModel::bruteforce()
 {
 	MultiParser tp;
-	if (!tp.setExpr(exp)) {
+	if (!tp.setExpr(searchString())) {
 		emit error(QString("Expression error: %1").arg(tp.errors()));
 		return;
 	}
-	int stindex = indexFrom;
+	int stindex = streetIndex();
 	if (stindex < 0)
 		stindex = 0;
 	else {
@@ -185,7 +185,9 @@ void StreetModel::bruteforce(const QString &exp, int indexFrom)
 		if (!res.isEmpty()) {
 			int hIndex = street->houseList().indexOf(res);
 			if (hIndex != -1) {
-				emit selected(index, hIndex);
+				setStreetIndex(index);
+				setHouseIndex(hIndex);
+				setHouseFound(res);
 				return;
 			}
 		}
@@ -209,9 +211,67 @@ void StreetModel::sort(QString role, bool order)
 		0, order ? Qt::DescendingOrder : Qt::AscendingOrder);
 }
 
+void StreetModel::setHouseFound(QString arg)
+{
+	if (mHouseFound == arg)
+		return;
+
+	mHouseFound = arg;
+	emit houseFoundChanged(arg);
+}
+
+void StreetModel::setHouseIndex(int arg)
+{
+	if (mHouseIndex == arg)
+		return;
+
+	mHouseIndex = arg;
+	emit houseIndexChanged(arg);
+}
+
+void StreetModel::setSearchString(QString arg)
+{
+	if (mSearchString == arg)
+		return;
+
+	mSearchString = arg;
+	emit searchStringChanged(arg);
+	updateHouse();
+}
+
+void StreetModel::setStreetIndex(int arg)
+{
+	if (mStreetIndex == arg)
+		return;
+
+	mStreetIndex = arg;
+	emit streetIndexChanged(arg);
+	updateHouse();
+}
+
 StreetList *StreetModel::host() const
 {
 	return mParent->host();
+}
+
+QString StreetModel::searchString() const
+{
+	return mSearchString;
+}
+
+int StreetModel::streetIndex() const
+{
+	return mStreetIndex;
+}
+
+QString StreetModel::houseFound() const
+{
+	return mHouseFound;
+}
+
+int StreetModel::houseIndex() const
+{
+	return mHouseIndex;
 }
 
 void StreetModel::setHost(StreetList *arg)
@@ -260,4 +320,25 @@ int StreetModel::rowFromSource(int row) const
 		return pi.row();
 	else
 		return -1;
+}
+
+void StreetModel::updateHouse()
+{
+	MultiParser tp;
+	if (!tp.setExpr(searchString()))
+		return;
+	Street* street = mParent->street(rowToSource(streetIndex()));
+	if (!street)
+		return;
+	QString res = tp.calculate(street);
+	if (!tp.errors().isEmpty()) {
+		setHouseFound("ERROR");
+		setHouseIndex(-1);
+		return;
+	}
+	if (!res.isEmpty())
+		setHouseFound(res);
+	int hIndex = street->houseList().indexOf(res);
+	// even if it is -1
+	setHouseIndex(hIndex);
 }

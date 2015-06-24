@@ -123,7 +123,7 @@ QString StreetParser::numeric(int num, Gender gnd)
 	if (actnum != num || actnum == 0)
 		return QString();
 
-	int endIndex;
+	int endIndex = 3;
 	switch (gnd) {
 	case Male:
 		if (actnum == 3)
