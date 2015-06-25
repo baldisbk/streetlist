@@ -124,6 +124,42 @@ void RegionModel::selectNone()
 	selectEvery(false);
 }
 
+void RegionModel::save() const
+{
+	QSettings settings;
+	settings.beginGroup("RegionModel");
+
+	int index = 0;
+	foreach(Region* region, mRegions) {
+		settings.beginGroup(QString("Region%1").arg(++index));
+		settings.setValue("name", region->name());
+		settings.setValue("selected", mSelected.value(region->name(), false));
+		settings.endGroup();
+	}
+}
+
+void RegionModel::load()
+{
+	QSettings settings;
+	settings.beginGroup("RegionModel");
+
+	QStringList groups = settings.childGroups();
+	foreach(QString group, groups) {
+		settings.beginGroup(group);
+		QString name = settings.value("name").toString();
+		bool flag = settings.value("selected").toBool();
+		settings.endGroup();
+		int index = mRegions.indexOf(mHost->region(name));
+		if (index == -1)
+			continue;
+		mSelected[name] = flag;
+		emit selected(name, flag);
+		QModelIndex ind = createIndex(index, 0);
+		emit dataChanged(ind, ind);
+	}
+	emit updated();
+}
+
 void RegionModel::selectEvery(bool sel)
 {
 	for (int i = 0; i < mRegions.size(); ++i) {

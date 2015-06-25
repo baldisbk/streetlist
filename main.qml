@@ -18,6 +18,11 @@ Window {
 			regionmodel.init()
 			districtmodel.init()
 			streetmodel.init()
+
+			regionmodel.load()
+			districtmodel.load()
+//			streetmodel.load()
+
 			loadDBSettings()
 		}
 	}
@@ -221,7 +226,7 @@ Window {
 	}
 
 	function loadDBSettings() {
-		if (settings.read("Flag") == null) {
+		if (settings.read("Flag") != null) {
 			streetlist.cX = settings.read("streetsX")
 			streetlist.cY = settings.read("streetsY")
 			streetlist.current = settings.read("streetsCur")
@@ -234,7 +239,7 @@ Window {
 	}
 
 	Component.onCompleted: {
-		if (settings.read("Flag") == null) {
+		if (settings.read("Flag") != null) {
 			menu.state = settings.read("Mode")
 		}
 		database.init()
@@ -249,5 +254,9 @@ Window {
 		settings.write("housesX", houselist.cX)
 		settings.write("housesY", houselist.cY)
 		settings.write("housesCur", houselist.current)
+
+		regionmodel.save()
+		districtmodel.save()
+//		streetmodel.save()
 	}
 }

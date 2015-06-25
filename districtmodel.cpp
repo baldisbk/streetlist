@@ -143,6 +143,42 @@ void DistrictModel::filter(QString region, bool flag)
 	}
 }
 
+void DistrictModel::save() const
+{
+	QSettings settings;
+	settings.beginGroup("DistrictModel");
+
+	int index = 0;
+	foreach(District* district, mDistricts) {
+		settings.beginGroup(QString("District%1").arg(++index));
+		settings.setValue("name", district->name());
+		settings.setValue("selected", mSelected.value(district->name(), false));
+		settings.endGroup();
+	}
+}
+
+void DistrictModel::load()
+{
+	QSettings settings;
+	settings.beginGroup("DistrictModel");
+
+	QStringList groups = settings.childGroups();
+	foreach(QString group, groups) {
+		settings.beginGroup(group);
+		QString name = settings.value("name").toString();
+		bool flag = settings.value("selected").toBool();
+		settings.endGroup();
+		int index = mDistricts.indexOf(mHost->district(name));
+		if (index == -1)
+			continue;
+		mSelected[name] = flag;
+		emit selected(name, flag);
+		QModelIndex ind = createIndex(index, 0);
+		emit dataChanged(ind, ind);
+	}
+	emit updated();
+}
+
 void DistrictModel::selectEvery(bool sel)
 {
 	for (int i = 0; i < mDistricts.size(); ++i) {

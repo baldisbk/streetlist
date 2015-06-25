@@ -42,6 +42,9 @@ public slots:
 	void selectAll();
 	void selectNone();
 
+	void save() const;
+	void load();
+
 signals:
 	void hostChanged(StreetList* host);
 	void selected(QString name, bool flag);
