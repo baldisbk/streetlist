@@ -5,6 +5,10 @@ StyleItem {
 	id: host
 	property alias model: table.model
 	property alias maxWidth: table.contentWidth
+
+	property alias cX: table.contentX
+	property alias cY: table.contentY
+
 	property string selected: ""
 	property alias current: table.current
 	onCurrentChanged: selected = model.nameForRow(current)

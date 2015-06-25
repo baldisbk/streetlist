@@ -11,13 +11,19 @@
 #include "district.h"
 #include "region.h"
 #include "systemfunc.h"
+#include "settings.h"
 
 int main(int argc, char *argv[])
 {
 	QGuiApplication app(argc, argv);
 
+	QCoreApplication::setOrganizationName("Vadim Balakhanov");
+	QCoreApplication::setOrganizationDomain("baldis.org");
+	QCoreApplication::setApplicationName("MoscowStreetList");
+
 	QQmlApplicationEngine engine;
 	qmlRegisterType<SystemFunc>("TheSystem", 1, 0, "SystemFunc");
+	qmlRegisterType<Settings>("TheSystem", 1, 0, "Settings");
 	qmlRegisterType<Street>("Streets", 1, 0, "Street");
 	qmlRegisterType<Region>("Streets", 1, 0, "Region");
 	qmlRegisterType<District>("Streets", 1, 0, "District");

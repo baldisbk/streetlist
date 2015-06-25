@@ -4,9 +4,15 @@ StyleItem {
 	property alias model: list.model
 	property alias delegate: list.delegate
 	property alias header: list.header
+
 	property bool hasSelection: true
+
 	property alias current: list.currentIndex
+	property alias contentHeight: list.contentHeight
 	property alias contentWidth: view.contentWidth
+	property alias contentX: view.contentX
+	property alias contentY: list.contentY
+
 	Flickable {
 		id: view
 		anchors.fill: parent

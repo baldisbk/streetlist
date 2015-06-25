@@ -3,6 +3,7 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.0
 import Streets 1.0
+import TheSystem 1.0
 
 Window {
 	id: mainwin
@@ -17,8 +18,10 @@ Window {
 			regionmodel.init()
 			districtmodel.init()
 			streetmodel.init()
+			loadDBSettings()
 		}
 	}
+	Settings {id: settings; section: "MainWindow"}
 
 	RegionModel {
 		id: regionmodel
@@ -217,8 +220,34 @@ Window {
 		}
 	}
 
+	function loadDBSettings() {
+		if (settings.read("Flag") == null) {
+			streetlist.cX = settings.read("streetsX")
+			streetlist.cY = settings.read("streetsY")
+			streetlist.current = settings.read("streetsCur")
+			houselist.cX = settings.read("housesX")
+			houselist.cY = settings.read("housesY")
+			houselist.current = settings.read("housesCur")
+			filters.loadSettings()
+			search.loadSettings()
+		}
+	}
+
 	Component.onCompleted: {
+		if (settings.read("Flag") == null) {
+			menu.state = settings.read("Mode")
+		}
 		database.init()
 		database.fromdb()
+	}
+	Component.onDestruction: {
+		settings.write("Flag", 1)
+		settings.write("Mode", menu.state)
+		settings.write("streetsX", streetlist.cX)
+		settings.write("streetsY", streetlist.cY)
+		settings.write("streetsCur", streetlist.current)
+		settings.write("housesX", houselist.cX)
+		settings.write("housesY", houselist.cY)
+		settings.write("housesCur", houselist.current)
 	}
 }

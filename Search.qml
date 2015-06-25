@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import TheSystem 1.0
 
 StyleItem {
 	id: host
@@ -22,6 +23,7 @@ StyleItem {
 			PropertyChanges {target: tags; checked: true}
 		}
 	]
+	Settings {id: settings; section: "Search"}
 	AutoLayout {
 		anchors.fill: host
 		central: filler
@@ -66,6 +68,18 @@ StyleItem {
 		}
 
 		Item {id: filler}
+	}
+	function loadSettings() {
+		if (settings.read("Flag") == null)
+			return;
+		bfEditor.text = settings.read("bfText")
+		state = settings.read("state")
+	}
+
+	Component.onDestruction: {
+		settings.write("Flag", 1)
+		settings.write("state", state)
+		settings.write("bfText", bfEditor.text)
 	}
 }
 

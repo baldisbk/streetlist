@@ -5,6 +5,8 @@ StyleItem {
 	id: host
 	property alias model: table.model
 	property alias maxWidth: table.contentWidth
+	property alias cX: table.contentX
+	property alias cY: table.contentY
 	Table {
 		id: table
 		anchors.fill: parent

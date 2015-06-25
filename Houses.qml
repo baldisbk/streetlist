@@ -5,6 +5,8 @@ StyleItem {
 	id: host
 	property alias maxWidth: table.contentWidth
 	property alias model: table.model
+	property alias cX: table.contentX
+	property alias cY: table.contentY
 	property alias current: table.current
 	width: fontWidth * 5
 	Table {

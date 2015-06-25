@@ -1,9 +1,11 @@
 import QtQuick 2.0
+import TheSystem 1.0
 
 StyleItem {
 	height: subtableSize + buttonSize
 	property alias dmodel: districts.model
 	property alias rmodel: regions.model
+	Settings {id: settings; section: "Filter"}
 	AutoLayout {
 		anchors.fill: parent
 		orientation: Qt.Horizontal
@@ -42,6 +44,22 @@ StyleItem {
 				}
 			}
 		}
+	}
+	function loadSettings() {
+		if (settings.read("Flag") == null)
+			return;
+		regions.cX = settings.read("regionsX")
+		regions.cY = settings.read("regionsY")
+		districts.cX = settings.read("districtsX")
+		districts.cY = settings.read("districtsY")
+	}
+
+	Component.onDestruction: {
+		settings.write("Flag", 1)
+		settings.write("regionsX", regions.cX)
+		settings.write("regionsY", regions.cY)
+		settings.write("districtsX", districts.cX)
+		settings.write("districtsY", districts.cY)
 	}
 }
 

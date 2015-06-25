@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     regionmodel.cpp \
     housemodel.cpp \
     systemfunc.cpp \
-    tokenparser.cpp
+    tokenparser.cpp \
+    settings.cpp
 
 RESOURCES += qml.qrc \
     pictures.qrc
@@ -35,7 +36,8 @@ HEADERS += \
     regionmodel.h \
     housemodel.h \
     systemfunc.h \
-    tokenparser.h
+    tokenparser.h \
+    settings.h
 
 DISTFILES += \
     android/AndroidManifest.xml \

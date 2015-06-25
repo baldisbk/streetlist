@@ -10,8 +10,8 @@ Item {
 
 	// sizes
 	property int fontWidth: fm.averageCharacterWidth * 1.5
-	property int buttonSize: sSize / 10
-	property int buttonTextWidth: sSize / 2.5
+	property int buttonSize: sSize / 8
+	property int buttonTextWidth: sSize / 2
 	property int textlineHeight: fm.height * 2
 	property int separatorSize: sSize / 50
 	property int buttonRadius: sSize / 50
