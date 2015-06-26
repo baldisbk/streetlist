@@ -60,8 +60,6 @@ void StreetParser::init()
 			<< "ее"
 			<< "ье"
 			<< "е"
-//			<< "ие"
-//			<< "ые"
 			;
 		mUAlpha
 			<< "А" << "Б" << "В" << "Г" << "Д" << "Е" << "Ё" << "Ж"
@@ -75,11 +73,8 @@ void StreetParser::init()
 			<< "п" << "р" << "с" << "т" << "у" << "ф" << "х" << "ц"
 			<< "ч" << "ш" << "щ" << "ъ" << "ы" << "ь" << "э" << "ю"
 			<< "я";
-		foreach (QString type, types) {
-		//	QRegExp re(QString("\\b%1\\b").arg(type));
-		//	re.setCaseSensitivity(Qt::CaseInsensitive);
+		foreach (QString type, types)
 			mStreetTypes.append(type);
-		}
 
 		mNumerics.insert(1, "Перв");
 		mNumerics.insert(2, "Втор");
@@ -117,9 +112,9 @@ void StreetParser::init()
 	}
 }
 
-QString StreetParser::numeric(int num, Gender gnd)
+QString StreetParser::numPostfix(int num, Gender gnd)
 {
-	int actnum = num%20;
+	int actnum = num%(MAX_NUMERIC+1);
 	if (actnum != num || actnum == 0)
 		return QString();
 
@@ -145,8 +140,24 @@ QString StreetParser::numeric(int num, Gender gnd)
 		else
 			endIndex = 8;
 		break;
+	default:;
 	}
-	return mNumerics[actnum] + mPostfixes[endIndex];
+	return mPostfixes[endIndex];
+}
+
+StreetParser::Gender StreetParser::genderForWord(QString word)
+{
+	for(int i = 0; i < mPostfixes.size(); ++i) {
+		// only full postfixes
+		if (mPostfixes.at(i).size() <= 1)
+			continue;
+		if (word.endsWith(mPostfixes.at(i))) {
+			if (i < 4) return Male;
+			if (i < 8) return Female;
+			return Other;
+		}
+	}
+	return Unknown;
 }
 
 ElemNumber StreetParser::parseElemNumber(int &pos, const QString &name)
@@ -351,7 +362,7 @@ QString StreetParser::canonical(QStringList names)
 		bool ok;
 		int n = names.at(nfNumber).toInt(&ok);
 		if (ok && n <= MAX_NUMERIC)
-			res << numeric(n, mGenders.value(names.at(nfType)));
+			res << mNumerics[n] + numPostfix(n, mGenders.value(names.at(nfType)));
 		else
 			num = names.at(nfNumber);
 	}
@@ -362,6 +373,34 @@ QString StreetParser::canonical(QStringList names)
 	if (!num.isEmpty())
 		res << num;
 	res << names.at(nfType);
+	return res.join(" ");
+}
+
+QString StreetParser::wikiRequest(QStringList names)
+{
+	QStringList res;
+	bool namefirst =
+		mGenders.value(names.at(nfType)) == genderForWord(names.at(nfName));
+	QString num;
+	if (!names.at(nfNumber).isEmpty()) {
+		bool ok;
+		int n = names.at(nfNumber).toInt(&ok);
+		if (ok && n <= MAX_NUMERIC)
+			res << QString("%1-%2").
+				arg(n).
+				arg(numPostfix(n, mGenders.value(names.at(nfType))));
+		else
+			num = names.at(nfNumber);
+	}
+	if (!names.at(nfSecondary).isEmpty())
+		res << names.at(nfSecondary);
+	if (namefirst && !names.at(nfName).isEmpty())
+		res << names.at(nfName);
+	if (!num.isEmpty())
+		res << num;
+	res << names.at(nfType);
+	if (!namefirst && !names.at(nfName).isEmpty())
+		res << names.at(nfName);
 	return res.join(" ");
 }
 
@@ -472,7 +511,12 @@ void Street::removeDistrict(District *district)
 
 QString Street::canonical() const
 {
-	return StreetParser::canonical(nameList());
+	return StreetParser::wikiRequest(nameList());
+}
+
+QString Street::wikiRequest() const
+{
+	return StreetParser::wikiRequest(nameList());
 }
 
 QString Street::secondary() const

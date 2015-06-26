@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     housemodel.cpp \
     systemfunc.cpp \
     tokenparser.cpp \
-    settings.cpp
+    settings.cpp \
+    wikiloader.cpp
 
 RESOURCES += qml.qrc \
     pictures.qrc
@@ -37,7 +38,8 @@ HEADERS += \
     housemodel.h \
     systemfunc.h \
     tokenparser.h \
-    settings.h
+    settings.h \
+    wikiloader.h
 
 DISTFILES += \
     android/AndroidManifest.xml \

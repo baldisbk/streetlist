@@ -224,6 +224,14 @@ Window {
 				streetmodel.bruteforce()
 		}
 	}
+	Connections {
+		target: streetlist
+		onCurrentChanged: {
+			var street = database.streets.street(streetlist.selected)
+			if (street != null)
+				description.street = street
+		}
+	}
 
 	function loadDBSettings() {
 		if (settings.read("Flag") != null) {

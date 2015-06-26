@@ -12,6 +12,7 @@
 #include "region.h"
 #include "systemfunc.h"
 #include "settings.h"
+#include "wikiloader.h"
 
 int main(int argc, char *argv[])
 {
@@ -22,6 +23,7 @@ int main(int argc, char *argv[])
 	QCoreApplication::setApplicationName("MoscowStreetList");
 
 	QQmlApplicationEngine engine;
+	qmlRegisterType<WikiLoader>("TheSystem", 1, 0, "WikiLoader");
 	qmlRegisterType<SystemFunc>("TheSystem", 1, 0, "SystemFunc");
 	qmlRegisterType<Settings>("TheSystem", 1, 0, "Settings");
 	qmlRegisterType<Street>("Streets", 1, 0, "Street");

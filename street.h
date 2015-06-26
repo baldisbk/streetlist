@@ -57,18 +57,21 @@ public:
 	static QString join(QStringList names);
 	static QList<House> splitHouses(QString houses);
 	static QString canonical(QStringList names);
+	static QString wikiRequest(QStringList names);
 	static int letterNumber(QChar letter);
 
 private:
 	enum Gender {
 		Male,
 		Female,
-		Other
+		Other,
+		Unknown
 	};
 
 	static void init();
 
-	static QString numeric(int num, Gender gnd);
+	static QString numPostfix(int num, Gender gnd);
+	static Gender genderForWord(QString word);
 
 	static ElemNumber parseElemNumber(int& pos, const QString& name);
 	static Number parseNumber(int& pos, const QString& name);
@@ -105,9 +108,10 @@ public:
 	QString secondary() const;
 	QString wholeName() const;
 	QString houses() const;
+	QString canonical() const;
+	QString wikiRequest() const;
 
 	int letterNumber(int index) const;
-	QString canonical() const;
 
 	Q_INVOKABLE void addHouse(const QString& house);
 	Q_INVOKABLE QStringList houseList() const;
