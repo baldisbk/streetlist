@@ -80,6 +80,8 @@ QStringList WikiLoader::processLine(QString& str)
 	QString skipTag;
 	int skipLevel = 0;
 
+	bool readCoords = false;
+
 	while(true) {
 		int newindex = re.indexIn(str, index);
 		if (newindex != -1) {
@@ -105,6 +107,8 @@ QStringList WikiLoader::processLine(QString& str)
 					res.append(space(level)+text);
 					empty.top() = false;
 				}
+				if (readCoords)
+					qDebug() << text;
 			}
 
 			if (noBrackTags.contains(tag))
@@ -116,6 +120,7 @@ QStringList WikiLoader::processLine(QString& str)
 					skip = true;
 					break;
 				}
+			readCoords = start && classes.contains("geo");
 
 			if (!skipMode && start && skip) {
 				skipTag = tag;
