@@ -114,6 +114,16 @@ void StreetParser::init()
 
 QString StreetParser::numPostfix(int num, Gender gnd)
 {
+	if (num == 0) {
+		// special short case
+		switch (gnd) {
+		case Male:	return mPostfixes[3];
+		case Female:	return mPostfixes[7];
+		case Other:	return mPostfixes[11];
+		default:;
+		}
+	}
+
 	int actnum = num%(MAX_NUMERIC+1);
 	if (actnum != num || actnum == 0)
 		return QString();
@@ -388,7 +398,7 @@ QString StreetParser::wikiRequest(QStringList names)
 		if (ok && n <= MAX_NUMERIC)
 			res << QString("%1-%2").
 				arg(n).
-				arg(numPostfix(n, mGenders.value(names.at(nfType))));
+				arg(numPostfix(0, mGenders.value(names.at(nfType))));
 		else
 			num = names.at(nfNumber);
 	}

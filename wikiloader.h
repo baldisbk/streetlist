@@ -33,8 +33,10 @@ private slots:
 
 private:
 	QStringList processLine(QString &str);
+	void request();
 
 	QNetworkAccessManager mManager;
+	bool mRetry;
 
 	Street* mStreet;
 	QString mHtml;

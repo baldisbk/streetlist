@@ -27,12 +27,9 @@ void WikiLoader::setStreet(Street *arg)
 		return;
 
 	mStreet = arg;
+	mRetry = false;
 	setHtml(QString());
-	QString url = QString("https://ru.m.wikipedia.org/wiki/%1_(Москва)").arg(arg->canonical()).replace(" ", "_");
-	QNetworkReply* reply = mManager.get(QNetworkRequest(QUrl(url)));
-	connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-		this, SLOT(onReplyError(QNetworkReply::NetworkError)));
-
+	request();
 	emit streetChanged(arg);
 }
 
@@ -132,6 +129,18 @@ QStringList WikiLoader::processLine(QString& str)
 	return res;
 }
 
+void WikiLoader::request()
+{
+	QString url = mRetry ?
+		QString("https://ru.m.wikipedia.org/wiki/%1").
+			arg(street()->canonical()).replace(" ", "_") :
+		QString("https://ru.m.wikipedia.org/wiki/%1_(Москва)").
+			arg(street()->canonical()).replace(" ", "_");
+	QNetworkReply* reply = mManager.get(QNetworkRequest(QUrl(url)));
+	connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
+		this, SLOT(onReplyError(QNetworkReply::NetworkError)));
+}
+
 void WikiLoader::onReplyArrived(QNetworkReply *reply)
 {
 	QString res;
@@ -147,10 +156,13 @@ void WikiLoader::onReplyArrived(QNetworkReply *reply)
 
 void WikiLoader::onReplyError(QNetworkReply::NetworkError code)
 {
-	const QNetworkReply* reply = dynamic_cast<const QNetworkReply*>(sender());
-	if (reply)
-		qDebug() << reply->errorString();
-	else
-		qDebug() << "error " + QString::number(code);
+	QNetworkReply* reply = dynamic_cast<QNetworkReply*>(sender());
+	if (!reply)
+		return;
+	reply->deleteLater();
+	if (!mRetry) {
+		mRetry = true;
+		request();
+	}
 }
 
