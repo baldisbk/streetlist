@@ -29,7 +29,7 @@ public slots:
 
 private slots:
 	void onReplyArrived(QNetworkReply*reply);
-	void onReplyError(QNetworkReply::NetworkError code);
+	void onReplyError(QNetworkReply::NetworkError);
 
 private:
 	QStringList processLine(QString &str);

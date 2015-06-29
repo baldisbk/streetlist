@@ -61,6 +61,9 @@ QStringList WikiLoader::processLine(QString& str)
 	re2.setMinimal(true);
 
 	QStack<QString> tags;
+	tags.push(QString());
+	QStack<bool> empty;
+	empty.push(false);
 	QStringList res;
 	int index = 0;
 	QStringList noBrackTags, skipTags, skipAllTags, skipClasses;
@@ -72,14 +75,14 @@ QStringList WikiLoader::processLine(QString& str)
 		<< "external" << "dablink" << "metadata" << "references"
 		<< "navbox" << "footer-info" << "footer-places";
 	// TODO class=geo - coords
+
 	bool skipMode = false;
 	QString skipTag;
 	int skipLevel = 0;
+
 	while(true) {
 		int newindex = re.indexIn(str, index);
 		if (newindex != -1) {
-			if (!skipMode && index != newindex)
-				res.append(space(level)+str.mid(index, newindex - index));
 			QString tag = re.cap(2);
 			QString contents = re.cap(3);
 			bool single = !contents.isEmpty() &&
@@ -89,6 +92,23 @@ QStringList WikiLoader::processLine(QString& str)
 			QStringList classes;
 			if (re2.indexIn(contents) != -1)
 				classes = re2.cap(1).split(' ');
+
+			if (index != newindex) {
+				QString text = str.mid(index, newindex - index);
+				if (	!skipMode &&
+					text != "Примечания" &&
+					//text != "См. также" &&
+					text != "Ссылки" &&
+					text != "Литература"
+					)
+				{
+					res.append(space(level)+text);
+					empty.top() = false;
+				}
+			}
+
+			if (noBrackTags.contains(tag))
+				empty.top() = false;
 
 			bool skip = skipAllTags.contains(tag);
 			foreach(QString cls, classes)
@@ -103,17 +123,29 @@ QStringList WikiLoader::processLine(QString& str)
 				skipMode = true;
 			}
 
+			bool removeEmpty = false;
+
 			if (end) {
 				--level;
-				if (tags.top() != tag)
-					qDebug() << tags.top() << tag;
-				tags.pop();
+				if (tags.pop() != tag)
+					qDebug() << "warning";
+				if (!empty.pop())
+					empty.top() = false;
+				else
+					removeEmpty = true;
 			}
-			if (!skipMode && !skipTags.contains(tag))
-				res.append(space(level)+re.cap());
+
+			if (!skipMode && !skipTags.contains(tag)) {
+				// clearing empty
+				if (removeEmpty)
+					res.removeLast();
+				else
+					res.append(space(level)+re.cap());
+			}
 			if (start && !noBrackTags.contains(tag)) {
 				++level;
 				tags.push(tag);
+				empty.push(true);
 			}
 
 			if (skipMode && end && tag == skipTag && level == skipLevel)
@@ -154,7 +186,7 @@ void WikiLoader::onReplyArrived(QNetworkReply *reply)
 	setHtml(res);
 }
 
-void WikiLoader::onReplyError(QNetworkReply::NetworkError code)
+void WikiLoader::onReplyError(QNetworkReply::NetworkError)
 {
 	QNetworkReply* reply = dynamic_cast<QNetworkReply*>(sender());
 	if (!reply)
