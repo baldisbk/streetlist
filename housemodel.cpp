@@ -93,6 +93,19 @@ QString HouseModel::street() const
 	return mStreet;
 }
 
+QString HouseModel::nameForRow(int row) const
+{
+	if (row >= 0 && row < mHouses.size())
+		return mHouses.at(row);
+	else
+		return QString();
+}
+
+int HouseModel::rowForName(QString name) const
+{
+	return mHouses.indexOf(name);
+}
+
 void HouseModel::setStreet(QString arg)
 {
 	if (mStreet == arg)

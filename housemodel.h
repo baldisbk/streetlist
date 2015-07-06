@@ -34,6 +34,9 @@ public:
 	QString street() const;
 
 public slots:
+	QString nameForRow(int row) const;
+	int rowForName(QString name) const;
+
 	void setHost(StreetList* host);
 	void setStreet(QString arg);
 
