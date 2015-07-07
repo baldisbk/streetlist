@@ -128,6 +128,7 @@ void RegionModel::save() const
 {
 	QSettings settings;
 	settings.beginGroup("RegionModel");
+	settings.remove("");
 
 	int index = 0;
 	foreach(Region* region, mRegions) {

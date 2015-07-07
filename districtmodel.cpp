@@ -147,6 +147,7 @@ void DistrictModel::save() const
 {
 	QSettings settings;
 	settings.beginGroup("DistrictModel");
+	settings.remove("");
 
 	int index = 0;
 	foreach(District* district, mDistricts) {
