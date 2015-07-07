@@ -228,8 +228,23 @@ Window {
 		target: streetlist
 		onCurrentChanged: {
 			var street = database.streets.street(streetlist.selected)
-			if (street != null)
+			if (street != null) {
 				description.street = street
+				streetmap.street = street
+				streetmap.houseNum = houselist.houseNum
+				streetmap.center()
+			}
+		}
+	}
+	Connections {
+		target: houselist
+		onCurrentChanged: {
+			var street = database.streets.street(streetlist.selected)
+			if (street != null) {
+				streetmap.street = street
+				streetmap.houseNum = houselist.houseNum
+				streetmap.center()
+			}
 		}
 	}
 

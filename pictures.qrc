@@ -13,5 +13,7 @@
         <file>pics/Tag-32.png</file>
         <file>pics/Minus-32.png</file>
         <file>pics/Plus-32.png</file>
+        <file>pics/Location-32.png</file>
+        <file>pics/Location-Red-32.png</file>
     </qresource>
 </RCC>
