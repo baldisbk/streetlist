@@ -9,6 +9,7 @@ QtObject {
 	property SystemFunc system: SystemFunc {}
 
 	property var db
+	property int dbVer: 1
 
 	signal saving
 	signal loading
@@ -38,9 +39,9 @@ QtObject {
 
 	function _dump(tx) {
 		var i
-		var str = tx.executeSql('SELECT * FROM TmpStr')
-		var dis = tx.executeSql('SELECT * FROM TmpDis')
-		var link = tx.executeSql('SELECT * FROM TmpStrInDis')
+		var str = tx.executeSql('SELECT * FROM StreetsV1')
+		var dis = tx.executeSql('SELECT * FROM DistrictsV1')
+		var link = tx.executeSql('SELECT * FROM LinksV1')
 		console.log('======== Database ========')
 		console.log('-------- Streets --------')
 		for (i = 0; i < str.rows.length; ++i)
@@ -89,15 +90,15 @@ QtObject {
 		var strts = streets.streets()
 		var districts = streets.districts()
 		var i
-		tx.executeSql('DELETE FROM TmpStr')
-		tx.executeSql('DELETE FROM TmpDis')
-		tx.executeSql('DELETE FROM TmpStrInDis')
+		tx.executeSql('DELETE FROM StreetsV1')
+		tx.executeSql('DELETE FROM DistrictsV1')
+		tx.executeSql('DELETE FROM LinksV1')
 		progress(0, 0, strts.length)
 		system.processEvents()
 		for (i=0; i<strts.length; i++) {
 			var street = streets.street(strts[i])
 			tx.executeSql(
-				'INSERT INTO TmpStr(wname, name, sec, houses, type, number) '+
+				'INSERT INTO StreetsV1(wname, name, sec, houses, type, number) '+
 				'VALUES (?, ?, ?, ?, ?, ?)',
 				[street.wholeName, street.name, street.secondary,
 				 street.houses, street.type, street.number])
@@ -109,14 +110,14 @@ QtObject {
 		for (i=0; i<districts.length; i++) {
 			var district = streets.district(districts[i])
 			var res = tx.executeSql(
-				'INSERT INTO TmpDis(name, region) '+
+				'INSERT INTO DistrictsV1(name, region) '+
 				'VALUES (?, ?)',
 				[district.name, district.region.name])
 			var strlist = district.streets()
 			for (var s=0; s<strlist.length; ++s) {
 				tx.executeSql(
-					'INSERT INTO TmpStrInDis(str, dis)'+
-					'SELECT uid, ? AS did FROM TmpStr WHERE wname=?',
+					'INSERT INTO LinksV1(str, dis)'+
+					'SELECT uid, ? AS did FROM StreetsV1 WHERE wname=?',
 					[res.insertId, strlist[s]])
 			}
 			progress(1, i+1, districts.length)
@@ -129,7 +130,7 @@ QtObject {
 
 		streets.clear();
 
-		res = tx.executeSql('SELECT * FROM TmpStr')
+		res = tx.executeSql('SELECT * FROM StreetsV1')
 		progress(0, 0, res.rows.length)
 		system.processEvents()
 		for (i = 0; i < res.rows.length; ++i) {
@@ -138,7 +139,7 @@ QtObject {
 			system.processEvents()
 		}
 
-		res = tx.executeSql('SELECT DISTINCT region AS name FROM TmpDis')
+		res = tx.executeSql('SELECT DISTINCT region AS name FROM DistrictsV1')
 		progress(1, 0, res.rows.length)
 		system.processEvents()
 		for (i = 0; i < res.rows.length; ++i) {
@@ -147,7 +148,7 @@ QtObject {
 			system.processEvents()
 		}
 
-		res = tx.executeSql('SELECT * FROM TmpDis')
+		res = tx.executeSql('SELECT * FROM DistrictsV1')
 		progress(2, 0, res.rows.length)
 		system.processEvents()
 		for (i = 0; i < res.rows.length; ++i) {
@@ -157,10 +158,10 @@ QtObject {
 		}
 
 		res = tx.executeSql(
-			'SELECT TmpStr.wname AS street, TmpDis.name AS district'+
-			' FROM TmpStrInDis'+
-			' JOIN TmpDis ON TmpDis.uid=dis'+
-			' JOIN TmpStr ON TmpStr.uid=str')
+			'SELECT StreetsV1.wname AS street, DistrictsV1.name AS district'+
+			' FROM LinksV1'+
+			' JOIN DistrictsV1 ON DistrictsV1.uid=dis'+
+			' JOIN StreetsV1 ON StreetsV1.uid=str')
 		progress(3, 0, res.rows.length)
 		system.processEvents()
 		for (i = 0; i < res.rows.length; ++i) {
@@ -172,18 +173,46 @@ QtObject {
 
 	function _makedb(tx) {
 		tx.executeSql(
-			'CREATE TABLE IF NOT EXISTS TmpDis('+
-			'uid INTEGER PRIMARY KEY AUTOINCREMENT,'+
-			'name TEXT,'+
-			'region INTEGER)')
-		tx.executeSql(
-			'CREATE TABLE IF NOT EXISTS TmpStr('+
-			'uid INTEGER PRIMARY KEY AUTOINCREMENT,'+
-			'wname TEXT,name TEXT,sec TEXT,houses TEXT,type TEXT,'+
-			'number TEXT)')
-		tx.executeSql(
-			'CREATE TABLE IF NOT EXISTS TmpStrInDis('+
-			'str INTEGER,dis INTEGER)')
+			'CREATE TABLE IF NOT EXISTS Version(version INTEGER)')
+		var res = tx.executeSql('SELECT version FROM Version')
+		var ver = 0
+		if (res.rows.length !== 0)
+			ver = res.rows.item(0).version
+		if (ver != dbVer) {
+			tx.executeSql('INSERT INTO Version VALUES (?)', [dbVer])
+			tx.executeSql(
+				'CREATE TABLE DistrictsV1('+
+				'uid INTEGER PRIMARY KEY AUTOINCREMENT,'+
+				'name TEXT,'+
+				'region TEXT,'+
+				'city TEXT'+
+				')')
+			tx.executeSql(
+				'CREATE TABLE StreetsV1('+
+				'uid INTEGER PRIMARY KEY AUTOINCREMENT,'+
+				'wname TEXT,'+
+				'name TEXT,'+
+				'sec TEXT,'+
+				'type TEXT,'+
+				'number TEXT,'+
+				'houses TEXT,'+
+				'description TEXT,'+
+				'coordinates TEXT'+
+				')')
+			tx.executeSql(
+				'CREATE TABLE LinksV1('+
+				'str INTEGER,'+
+				'dis INTEGER'+
+				')')
+
+			// actually update...
+
+			switch(ver) {
+			case 0:
+				break;
+			default:;
+			}
+		}
 	}
 }
 
