@@ -5,7 +5,15 @@ import Streets 1.0
 
 StyleItem {
 	property alias street: loader.street
-	WikiLoader {id: loader}
+	WikiLoader {
+		id: loader
+		onStreetChanged: {
+			// set progress indicator
+		}
+		onHtmlChanged: {
+			// set progress indicator off
+		}
+	}
 	TextArea {
 		text: loader.html
 		anchors.fill: parent

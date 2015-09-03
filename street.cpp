@@ -420,17 +420,19 @@ int StreetParser::letterNumber(QChar letter)
 }
 
 
-Street::Street(QObject *parent): QObject(parent)
+Street::Street(QObject *parent): QObject(parent), mDescSrc(stNone), mCoordSrc(stNone)
 {
 }
 
-Street::Street(const QString &name, QObject *parent): QObject(parent), mWholeName(name)
+Street::Street(const QString &name, QObject *parent): QObject(parent), mWholeName(name),
+	mDescSrc(stNone), mCoordSrc(stNone)
 {
 	parseName();
 	joinName();
 }
 
-Street::Street(const QVariantMap &props, QObject *parent): QObject(parent)
+Street::Street(const QVariantMap &props, QObject *parent): QObject(parent),
+	mDescSrc(stNone), mCoordSrc(stNone)
 {
 	if (props.value("name").isNull()) {
 		setWholeName(props.value("wholeName").toString());
@@ -440,6 +442,24 @@ Street::Street(const QVariantMap &props, QObject *parent): QObject(parent)
 		mNumber = props.value("number").toString();
 		mSecondary = props.value("sec").toString();
 		mHouses = StreetParser::splitHouses(props.value("houses").toString());
+
+		int ver = props.value("version").toInt();
+		mDescSrc = SourceType(ver & 0x0F);
+		mCoordSrc = SourceType((ver >> 4) & 0x0F);
+
+		mDescription = props.value("description").toString();
+		if (mDescription.isEmpty())
+			mDescSrc = stNone;
+
+		QString coord = props.value("coordinates").toString();
+		bool reslt, reslg;
+		double lat = coord.section("; ", 0, 0).toDouble(&reslt);
+		double lon = coord.section("; ", 1, 1).toDouble(&reslg);
+		if (reslt && reslg)
+			setCoordinates(QGeoCoordinate(lat, lon));
+		else
+			mCoordSrc = stNone;
+
 		joinName();
 	}
 }
@@ -517,6 +537,16 @@ void Street::removeDistrict(District *district)
 		mDistricts.remove(district->name());
 	if (district->streets().contains(wholeName()))
 		district->removeStreet(this);
+}
+
+QString Street::description() const
+{
+	return mDescription;
+}
+
+QGeoCoordinate Street::coordinates() const
+{
+	return mCoordinates;
 }
 
 QString Street::canonical() const
@@ -609,6 +639,24 @@ void Street::check() const
 	}
 }
 
+void Street::setDescription(QString description)
+{
+	if (mDescription == description)
+		return;
+
+	mDescription = description;
+	emit descriptionChanged(description);
+}
+
+void Street::setCoordinates(QGeoCoordinate coordinates)
+{
+	if (mCoordinates == coordinates)
+		return;
+
+	mCoordinates = coordinates;
+	emit coordinatesChanged(coordinates);
+}
+
 void Street::setSecondary(QString arg)
 {
 	if (mSecondary == arg)
@@ -666,6 +714,31 @@ QStringList Street::nameList() const
 	res[nfNumber] = number();
 
 	return res;
+}
+
+Street::SourceType Street::coordSrc() const
+{
+	return mCoordSrc;
+}
+
+void Street::setCoordSrc(const SourceType &coordSrc)
+{
+	mCoordSrc = coordSrc;
+}
+
+Street::SourceType Street::descSrc() const
+{
+	return mDescSrc;
+}
+
+void Street::setDescSrc(const SourceType &descSrc)
+{
+	mDescSrc = descSrc;
+}
+
+int Street::version() const
+{
+	return int(mDescSrc) + (int(mCoordSrc) << 4);
 }
 
 

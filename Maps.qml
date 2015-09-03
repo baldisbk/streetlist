@@ -29,6 +29,10 @@ StyleItem {
 				map.center = get(0).coordinate
 				map.pointer.coordinate = get(0).coordinate
 				map.pointer.visible = true
+				if (street.coordSrc() < Street.stGeoCode) {
+					street.coordinates = get(0).coordinate
+					street.setCoordSrc(Street.stGeoCode)
+				}
 			} else {
 				map.pointer.visible = false
 			}

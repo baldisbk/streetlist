@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QStringList>
 #include <QVariant>
+#include <QGeoCoordinate>
 
 class Region;
 class District;
@@ -88,7 +89,16 @@ private:
 
 class Street : public QObject {
 	Q_OBJECT
+	Q_ENUMS(SourceType)
+
 public:
+	enum SourceType {
+		stNone = 0,
+		stWiki,
+		stGeoCode,
+		stUser
+	};
+
 	Street(QObject* parent = NULL);
 	Street(const QString& name, QObject* parent = NULL);
 	Street(const QVariantMap& props, QObject* parent = NULL);
@@ -100,6 +110,8 @@ public:
 	Q_PROPERTY(QString wholeName READ wholeName WRITE setWholeName NOTIFY wholeNameChanged)
 	Q_PROPERTY(QString houses READ houses WRITE setHouses NOTIFY housesChanged)
 	Q_PROPERTY(QString secondary READ secondary WRITE setSecondary NOTIFY secondaryChanged)
+	Q_PROPERTY(QGeoCoordinate coordinates READ coordinates WRITE setCoordinates NOTIFY coordinatesChanged)
+	Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged)
 	Q_PROPERTY(QString canonical READ canonical)
 
 	QString name() const;
@@ -110,6 +122,8 @@ public:
 	QString houses() const;
 	QString canonical() const;
 	QString wikiRequest() const;
+	QGeoCoordinate coordinates() const;
+	QString description() const;
 
 	int letterNumber(int index) const;
 
@@ -120,12 +134,11 @@ public:
 	Q_INVOKABLE void addDistrict(District* district);
 	Q_INVOKABLE void removeDistrict(District* district);
 
-//	Q_INVOKABLE int parseNumber(QString house) const;
-//	Q_INVOKABLE QString parseLiter(QString house) const;
-//	Q_INVOKABLE int parseBuilding(QString house) const;
-//	Q_INVOKABLE QString parseCorpse(QString house) const;
-//	Q_INVOKABLE int parseCorner(QString house) const;
-//	Q_INVOKABLE bool parseIsProperty(QString house) const;
+	Q_INVOKABLE SourceType descSrc() const;
+	Q_INVOKABLE void setDescSrc(const SourceType &descSrc);
+	Q_INVOKABLE SourceType coordSrc() const;
+	Q_INVOKABLE void setCoordSrc(const SourceType &coordSrc);
+	Q_INVOKABLE int version() const;
 
 public slots:
 	void setName(QString arg);
@@ -133,10 +146,11 @@ public slots:
 	void setNumber(QString arg);
 	void setSecondary(QString arg);
 	void setWholeName(QString arg);
+	void setHouses(QString) {}
+	void setCoordinates(QGeoCoordinate coordinates);
+	void setDescription(QString description);
 
 	void check() const;
-
-	void setHouses(QString) {}
 
 signals:
 	void nameChanged(QString arg);
@@ -144,8 +158,10 @@ signals:
 	void numberChanged(QString arg);
 	void wholeNameChanged(QString arg);
 	void housesChanged(QString arg);
-
 	void secondaryChanged(QString arg);
+	void coordinatesChanged(QGeoCoordinate coordinates);
+
+	void descriptionChanged(QString description);
 
 private:
 	void joinName();
@@ -160,6 +176,9 @@ private:
 	QString mNumber;
 	QString mSecondary;
 	QString mWholeName;
+	QGeoCoordinate mCoordinates;
+	QString mDescription;
+	SourceType mDescSrc, mCoordSrc;
 
 	QMap<QString, District*> mDistricts;
 };

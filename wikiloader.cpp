@@ -21,16 +21,24 @@ QString WikiLoader::html() const
 	return mHtml;
 }
 
+QGeoCoordinate WikiLoader::coordinates() const
+{
+	return mCoord;
+}
+
 void WikiLoader::setStreet(Street *arg)
 {
 	if (mStreet == arg)
 		return;
 
 	mStreet = arg;
-	mRetry = false;
-	setHtml(QString());
-	request();
 	emit streetChanged(arg);
+
+	mRetry = false;
+	setHtml(arg->description());
+	setCoordinates(arg->coordinates());
+	if (arg->coordSrc() < Street::stWiki && arg->descSrc() < Street::stWiki)
+		request();
 }
 
 void WikiLoader::setHtml(QString arg)
@@ -39,7 +47,24 @@ void WikiLoader::setHtml(QString arg)
 		return;
 
 	mHtml = arg;
+	if (mStreet->descSrc() <= Street::stWiki) {
+		mStreet->setDescription(mHtml);
+		mStreet->setDescSrc(Street::stWiki);
+	}
 	emit htmlChanged(arg);
+}
+
+void WikiLoader::setCoordinates(QGeoCoordinate coordinates)
+{
+	if (mCoord == coordinates)
+		return;
+
+	mCoord = coordinates;
+	if (mStreet->coordSrc() <= Street::stWiki) {
+		mStreet->setCoordinates(mCoord);
+		mStreet->setCoordSrc(Street::stWiki);
+	}
+	emit coordinatesChanged(coordinates);
 }
 
 
@@ -99,7 +124,7 @@ QStringList WikiLoader::processLine(QString& str)
 				QString text = str.mid(index, newindex - index);
 				if (	!skipMode &&
 					text != "Примечания" &&
-					//text != "См. также" &&
+					text != "См. также" &&
 					text != "Ссылки" &&
 					text != "Литература"
 					)
@@ -107,8 +132,13 @@ QStringList WikiLoader::processLine(QString& str)
 					res.append(space(level)+text);
 					empty.top() = false;
 				}
-				if (readCoords)
-					qDebug() << text;
+				if (readCoords) {
+					bool reslt, reslg;
+					double lat = text.section("; ", 0, 0).toDouble(&reslt);
+					double lon = text.section("; ", 1, 1).toDouble(&reslg);
+					if (reslt && reslg)
+						setCoordinates(QGeoCoordinate(lat, lon));
+				}
 			}
 
 			if (noBrackTags.contains(tag))
@@ -181,6 +211,9 @@ void WikiLoader::request()
 void WikiLoader::onReplyArrived(QNetworkReply *reply)
 {
 	QString res;
+	if (reply->error() != QNetworkReply::NoError)
+		return;
+
 	while (!reply->atEnd()) {
 		QByteArray line = reply->readLine();
 		QString str = line.data();

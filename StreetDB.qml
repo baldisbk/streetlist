@@ -98,10 +98,13 @@ QtObject {
 		for (i=0; i<strts.length; i++) {
 			var street = streets.street(strts[i])
 			tx.executeSql(
-				'INSERT INTO StreetsV1(wname, name, sec, houses, type, number) '+
-				'VALUES (?, ?, ?, ?, ?, ?)',
+				'INSERT INTO StreetsV1('+
+					'wname, name, sec, houses, type, number,'+
+					'description, coordinates, version) '+
+				'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
 				[street.wholeName, street.name, street.secondary,
-				 street.houses, street.type, street.number])
+				 street.houses, street.type, street.number,
+				 street.description, street.coordinates, street.version()])
 			progress(0, i+1, strts.length)
 			system.processEvents()
 		}
@@ -197,7 +200,8 @@ QtObject {
 				'number TEXT,'+
 				'houses TEXT,'+
 				'description TEXT,'+
-				'coordinates TEXT'+
+				'coordinates TEXT,'+
+				'version INT'+
 				')')
 			tx.executeSql(
 				'CREATE TABLE LinksV1('+
